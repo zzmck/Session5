@@ -42,6 +42,8 @@ function showProduct() {
     })
     .catch(function(err) {
       // Une erreur est survenue
+      alert("Une erreur est survenue au chargement des produits: "+err+". Merci de revenir.");
+           
     });
   }
 showProduct();

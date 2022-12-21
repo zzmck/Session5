@@ -70,7 +70,7 @@ function showProduct(urlId) {
     .catch(function(err) {
 
             // Une erreur est survenue
-            alert("Une erreur est survenue au chargement du produit. Merci de revenir.");
+            alert("Une erreur est survenue au chargement du produit: "+err+". Merci de revenir.");
             returnIndex();
     
     });

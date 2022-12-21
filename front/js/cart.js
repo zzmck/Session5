@@ -379,10 +379,10 @@ function verification(){
         body: JSON.stringify(backOrder),
       })
         .then(function (res) {
-          if (res.ok) {
-            return res.json();
-          }
-        })
+                if (res.ok) {
+                    return res.json();
+                }
+            })
         .then(function (data) {
           location.href = `http://127.0.0.1:5000/front/html/confirmation.html?orderId=${data.orderId}`;
         })
