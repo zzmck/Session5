@@ -190,7 +190,7 @@ for(i=0;i<nbDeValeur;i++){
                                         elDivError.style.borderRadius="50px";
                                         elDivError.style.backgroundColor="white";
                                         elDivError.style.textAlign="center"; 
-                                        elDivError.innerHTML="<p>Quantité "+elInputQuantite.value+" impossible<br>il doit etre compris en 1 et 100.<br>Insertion minimum : 1</p>";
+                                        elDivError.innerHTML="<p>Quantité "+elInputQuantite.value+" impossible<br>il doit etre compris entre 1 et 100.<br>Insertion minimum : 1</p>";
                                         setTimeout(afficherLePanier,4000);
                                     } else if (elInputQuantite.value>100){
                                         modificationQuantite(idDuProduit, couleurDuProduit, indexDuProduit, 100);
@@ -199,7 +199,7 @@ for(i=0;i<nbDeValeur;i++){
                                         elDivError.style.borderRadius="50px";
                                         elDivError.style.backgroundColor="white";
                                         elDivError.style.textAlign="center"; 
-                                        elDivError.innerHTML="<p>Quantité "+elInputQuantite.value+" impossible<br>il doit etre compris en 1 et 100.<br>Insertion maximum : 100</p>";
+                                        elDivError.innerHTML="<p>Quantité "+elInputQuantite.value+" impossible<br>il doit etre compris entre 1 et 100.<br>Insertion maximum : 100</p>";
                                         setTimeout(afficherLePanier,4000);
                                     }
                                 }
