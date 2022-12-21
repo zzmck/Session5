@@ -400,12 +400,7 @@ function envoiForm(){
         document.getElementById("order").style.display = "none";
     }
     }
-//Fin de validation on passe à la confirmation
-//function gotoConfirmation(){
 
-    //document.location.href="http://127.0.0.1:5000/front/html/confirmation.html"; 
-
-//}
 //Controle indépendant des champs
 document.getElementById("firstName").addEventListener("change",() => {
     let valeurEntree = document.getElementById("firstName").value;
