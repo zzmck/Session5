@@ -38,7 +38,8 @@ function showProduct(urlId) {
 
     })
     .then(function(value) { 
-
+        //Titre de la page
+        document.querySelector("title").textContent = value.name;
         //Image
         let elImg = document.createElement("img");
         document.querySelector(".item__img").appendChild(elImg);
