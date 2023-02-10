@@ -1,15 +1,17 @@
 
 function showProduct() {
+  //Récupération des produits provenant de l'API
     fetch("http://127.0.0.1:3000/api/products")
     .then(function(res) {
       if (res.ok) {
         return res.json();
       }
     })
-    .then(function(value) {          
+    .then(function(value) {    
+        //Pour chaque produit, on les affiches sur la page      
           let nbProduct = value.length;    
           for(let i = 0;i < nbProduct; i++){
-
+                //Creation DOM
                    //lien
                    let elA = document.createElement("a");
                    document.querySelector("#items").appendChild(elA);
@@ -46,4 +48,5 @@ function showProduct() {
            
     });
   }
+  //Affichage
 showProduct();

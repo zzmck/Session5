@@ -3,6 +3,7 @@ const url = new URL(window.location.href);
 const urlId = url.searchParams.get('id');
 let panier=[];
 let produit;
+let positionProduit;
 
 //------------------------------------Classe constructor------------------------
 //On crée une classe constructor pour l'ajout au localStorage
@@ -78,6 +79,7 @@ function showProduct(urlId) {
 
 //Ajout du produit
 function traitement(){
+    //Vérification des quantités
     if (document.getElementById("quantity").value <= 0 || document.getElementById("quantity").value > 100) {
 
         //alert("La quantité choisie pour votre produit n'est pas possible. Veuillez choisir une quantité différente.");
@@ -98,6 +100,7 @@ function traitement(){
             }, 2000);
         }
     } else if(document.getElementById("colors").value===""){
+        //Si la couleur n'est pas séléctionnée
         messageError("Merci de choisir une couleur.");
         setTimeout(() => {              
             document.getElementById("messages").innerHTML="";
@@ -105,36 +108,45 @@ function traitement(){
 
     }
     else{
-            
+        //Si la couleur et la quantité est correct on créer un produit à insérer
         let quantite = document.getElementById("quantity").value;
         let couleur = document.getElementById("colors").value;
         produit = new Produit(urlId,quantite,couleur);
 
- 
+    //ANALYSE DU LS
+    //Si le LS contient déjà au moins un article
     if (localStorage.length != 0 && panier.length=== 0 ){
 
-        console.log("Ls non vide");
+        //console.log("Ls non vide");
+        //On récupére le panier du LS
         panierReturn = JSON.parse(localStorage.getItem("Panier"));
-
+            //Pour chaque valeur du panier on l'inser dans notre tableau de travail "panier"
             for(i=0;i<panierReturn.length;i++){
 
                 let lSRetour= new Produit(panierReturn[i].id, panierReturn[i].quantite, panierReturn[i].couleur);
                 let addToPanier = panier.push(lSRetour);
-            
+                //On récupère l'index du produit qui correspond à notre future ajout pour l'insérer au bon emplacement
+                if(panierReturn[i].id===produit.id){
+                    positionProduit = i;
+                    console.log(positionProduit);
+                }
             }
 
-        console.log(panier); 
+        //console.log(panier); 
 
     }
+    
 
+    //On filtre notre tableau "panier" pour savoir si un ID identique est déjà présent dans le LS
     let panierFiltreId =  panier.filter(function(panierFiltreId) { 
-
+        //Si c'est le cas on insert son ID dans la variable panierFiltreId
+        
         return panierFiltreId.id === produit.id;
 
     });
-
+    //SI panierFiltreId est srtictement VIDE c'est qu'il n'existe pas dans le panier
     if (panierFiltreId.length === 0){
-
+        //Insertion dans le panier
         //console.log("Aucun résultat pour cet Id");
         //console.log(produit.id);
         let addToPanier = panier.push(produit);
@@ -142,25 +154,26 @@ function traitement(){
         console.log("Produit ajouté au panier");
         messageSuccessAdd();
     } else {
-
+        //Le produit est déjà connu dans le panier
         //console.log("L'id existe " + panierFiltreId.length + " de fois dans le panier");
         
-        //on vérifie que la couleur est dans notre tableau
+        //on vérifie que la couleur du produit est dans notre tableau
         var panierFiltreColor =  panierFiltreId.filter(function(panierFiltreColor) {
-            
+            //Si c'est le cas on retourne la couleur déjà dans le panier dans la variable panierFilterColor
             return panierFiltreColor.couleur === produit.couleur;
         
         });
 
-
+        //Si panierFilterColor est sirectement VIDE c'est que la couleur est différente de celle connu dans le panier
         if (panierFiltreColor.length === 0){
-
+            //On insert donc le nouveau produit à la suite du précédent grace à SPLICE et à l'index du précédent produit à ID identique
+            //Insertion du produit dans le panier
             //console.log("Aucun résultat pour cette couleur sur cet Id");
-            let addToPanier = panier.push(produit);
+            let addToPanier = panier.splice(positionProduit,0, produit);
             console.log("Produit ajouté au panier.")
             messageSuccessAdd();
         } else {
-        
+            //Dans le cas ou l'id est connu et que la couleur correspond on modifie la quantité du produit
             //console.log("Cet Id de cette couleur est déjà le panier, on modife la quantité.")
                 
                 for (i=0;i<panier.length;i++){
@@ -169,7 +182,7 @@ function traitement(){
                         
                         //Le produit est connu dans la table. on modifie sa quantité
                         panier[i].quantite = produit.quantite;
-                        console.log("Tout est bon, on modifi la quantité du produit");
+                        console.log("Tout est bon, on modifie la quantité du produit");
                         messageSuccessMod();
                     }
                 }
@@ -177,8 +190,9 @@ function traitement(){
     }
 
 
-    console.log(panier.length);
-    
+    //console.log(panier.length);
+
+    //Une fois le traitement terminé on met en forme JSON les donnée du tableau panier pour inserer dans le LS
     for(i=0;i<(panier.length);i++){
         
         localStorage.setItem("Panier",JSON.stringify(panier));
@@ -187,34 +201,38 @@ function traitement(){
     }
 }
 function messageSuccessAdd(){
+    //On agit sur le DOM pour le message d'ajout au panier
     document.getElementById("messages").style.color="white";
     document.getElementById("messages").style.borderRadius="50px";
     document.getElementById("messages").style.backgroundColor="green";
     document.getElementById("messages").style.textAlign="center";                                     
     document.getElementById("messages").innerHTML="<p>Produit ajouté au panier</p>";
+    //durée d'apparition sur 2sec
     setTimeout(() => {              
         document.getElementById("messages").innerHTML="";
     }, 2000);
 
 }
 function messageSuccessMod(){
+    //On agit sur le DOM pour afficher le message de modification de quantité
     document.getElementById("messages").style.color="white";
     document.getElementById("messages").style.borderRadius="50px";
     document.getElementById("messages").style.backgroundColor="green";
     document.getElementById("messages").style.textAlign="center";                                     
     document.getElementById("messages").innerHTML="<p>Quantité modifiée dans votre panier</p>";
+    //Durée d'affichage de 2sec
     setTimeout(() => {              
         document.getElementById("messages").innerHTML="";
     }, 2000);
 
 }
 function messageError(message){
+//On agit sur le DOM pour afficher le message d'erreur
 document.getElementById("messages").style.color="red";
 document.getElementById("messages").style.borderRadius="50px";
 document.getElementById("messages").style.backgroundColor="white";
 document.getElementById("messages").style.textAlign="center";                                     
 document.getElementById("messages").innerHTML="<p>"+message+"</p>";
-
 }
 //------------------------------Chargement de la page-----------------------
 //On affiche le produit

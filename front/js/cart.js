@@ -88,20 +88,21 @@ fetch("http://127.0.0.1:3000/api/products")
 }
 //Affichage du panier
 function afficherLePanier(){
+    //On vide le DOM pour partir sur une base propre
     document.querySelector("#cart__items").textContent="";
+    //On passe les quantités et prix à 0
     totalPrix = 0;
     totalQuantite=0;
 //Pour chaque produit récupéré dans allProduct
 for(i=0;i<nbDeValeur;i++){
     //console.log(allProduct);
     //console.log(nbDeValeur);
-    
     //On crée nos variables ID COULEUR et INDEX
     let idDuProduit = allProduct[i].id;
     let couleurDuProduit = allProduct[i].couleur;
     let indexDuProduit = i;
 
-                    //Affichage des produits en boucle
+                    //Affichage des produits en boucle CREATION DU DOM
                     //Article
                     let article = document.createElement("article");
                     document.querySelector("#cart__items").appendChild(article);
@@ -181,7 +182,7 @@ for(i=0;i<nbDeValeur;i++){
                             elInputQuantite.addEventListener("change", (e) => {
                                 e.preventDefault;
                                 if(modificationQuantite(idDuProduit, couleurDuProduit, indexDuProduit, elInputQuantite.value)){
-                                    console.log("Modifié dans le Ls");
+                                    console.log("Modifié dans le Localstorage");
                                 } else {
                                     if(elInputQuantite.value<=0){
                                         modificationQuantite(idDuProduit, couleurDuProduit, indexDuProduit, 1);
@@ -316,19 +317,28 @@ function verificationDeRemplissage(nomChamp, valeur){
     //on récupére le nom du champ
     //let valeurEntree = document.getElementById(nomChamp).value;
     //console.log(valeurEntree.value.length);
+    //Si le champ est vide
     if(valeur.length === 0){
         document.getElementById(nomChamp + "ErrorMsg").textContent = "Le champ ne doit pas etre vide";    
         document.getElementById(nomChamp).style.border="3px solid red";
         document.getElementById(nomChamp + "ErrorMsg").style.color="red";
         document.getElementById("order").style.display = "none";
         return false;
+        //Si le champ contient des nombres ( sauf adresse et email )
     } else if (nomChamp != "address" && nomChamp!="email" && valeur.match(/[0-9]/i)){
             document.getElementById(nomChamp + "ErrorMsg").textContent = "Le champ ne doit pas contenir de nombre [0-9]";    
             document.getElementById(nomChamp).style.border="3px solid orange";
             document.getElementById(nomChamp + "ErrorMsg").style.color="orange";
             document.getElementById("order").style.display = "none";
             return false;
-    
+        //si les champs contiennent des caractères spéciaux (sauf email)
+    } else if (nomChamp != "email" && valeur.match(/[ýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._\s\.\,\\\@\!\\[\]\&\(\)\|\_\/\%\^\*+\°\§\€\&\"\`\=\+\¤\¨:]/)){
+        document.getElementById(nomChamp + "ErrorMsg").textContent = "Le champ ne doit pas contenir de caractères spéciaux";    
+        document.getElementById(nomChamp).style.border="3px solid orange";
+        document.getElementById(nomChamp + "ErrorMsg").style.color="orange";
+        document.getElementById("order").style.display = "none";
+        return false;
+        //Validation du champ email uniquement
     }
     else if(nomChamp === "email" && (!valeur.match(/^(([^<>()[]\.,;:s@]+(.[^<>()[]\.,;:s@]+)*)|(.+))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/) || valeur.match(" "))){
         document.getElementById(nomChamp + "ErrorMsg").textContent = "L'email doit etre sous la forme : 'mail@mail.fr' et ne doit pas contenir d'espace";    
@@ -337,6 +347,7 @@ function verificationDeRemplissage(nomChamp, valeur){
         document.getElementById("order").style.display = "none";
 
     } else {
+        //Sinon c'est que c'est valide
     document.getElementById(nomChamp).style.border="3px solid green";
     document.getElementById(nomChamp + "ErrorMsg").style.color="green";
     document.getElementById(nomChamp + "ErrorMsg").textContent="Valide";
