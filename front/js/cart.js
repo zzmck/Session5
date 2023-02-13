@@ -99,7 +99,7 @@ for(i=0;i<nbDeValeur;i++){
     //console.log(nbDeValeur);
     //On crée nos variables ID COULEUR et INDEX
     let idDuProduit = allProduct[i].id;
-    let couleurDuProduit = allProduct[i].couleur;
+    let couleurDuProduit = allProduct[i].color;
     let indexDuProduit = i;
 
                     //Affichage des produits en boucle CREATION DU DOM
@@ -178,7 +178,7 @@ for(i=0;i<nbDeValeur;i++){
                             //max 100
                             elInputQuantite.setAttribute("max",100);
                             //value = PRICE
-                            elInputQuantite.setAttribute("value",allProduct[i].quantite);
+                            elInputQuantite.setAttribute("value",allProduct[i].quantity);
                             elInputQuantite.addEventListener("change", (e) => {
                                 e.preventDefault;
                                 if(modificationQuantite(idDuProduit, couleurDuProduit, indexDuProduit, elInputQuantite.value)){
@@ -231,6 +231,8 @@ for(i=0;i<nbDeValeur;i++){
                                 article.innerHTML="Suppression en cours";
                                 setTimeout(deleteItem, 2000, idDuProduit, couleurDuProduit, indexDuProduit);
                                });
+
+                               //###########################################################################################################################################################
 //A chaque affichage de produit on inser le prix et la quantité du produit total à tous les autres produits
 totalPrix = (totalPrix + (allProduct[i].prix * allProduct[i].quantite));
 totalQuantite = totalQuantite + Number(allProduct[i].quantite);
@@ -395,7 +397,7 @@ function verification(){
                 }
             })
         .then(function (data) {
-          location.href = `http://127.0.0.1:5000/front/html/confirmation.html?orderId=${data.orderId}`;
+          location.href = `/front/html/confirmation.html?orderId=${data.orderId}`;
         })
         .catch(function (err) {
           console.log(err);

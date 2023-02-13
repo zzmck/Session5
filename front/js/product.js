@@ -4,7 +4,7 @@ const urlId = url.searchParams.get('id');
 let panier=[];
 let produit;
 let positionProduit;
-
+let url_dev ="http://127.0.0.1:3000";
 //------------------------------------Classe constructor------------------------
 //On crée une classe constructor pour l'ajout au localStorage
 class Produit {
@@ -21,13 +21,13 @@ class Produit {
 //Retour à la page d'index
 function returnIndex(){
 
-    document.location.href="http://127.0.0.1:5000/front/html/index.html"; 
+    document.location.href="/front/html/index.html"; 
 
 }
 //Affichage du produit
 function showProduct(urlId) {
 
-    fetch("http://127.0.0.1:3000/api/products/" + urlId + "")
+    fetch (`${url_dev}/api/products/${urlId}`)
     .then(function(res) {
 
         if (res.ok) {
@@ -63,7 +63,6 @@ function showProduct(urlId) {
         document.getElementById("quantity").setAttribute("value", 1);
 
         let elDivError = document.createElement("div");
-        //document.getElementsByClassName
         document.querySelector("article").appendChild(elDivError);
         elDivError.style.marginTop="5px";
         elDivError.style.width="90%";
