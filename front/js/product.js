@@ -119,14 +119,14 @@ function traitement(){
 
         //console.log("Ls non vide");
         //On récupére le panier du LS
-        panierReturn = JSON.parse(localStorage.getItem("Panier"));
+        productFullInformation = JSON.parse(localStorage.getItem("Panier"));
             //Pour chaque valeur du panier on l'inser dans notre tableau de travail "panier"
-            for(i=0;i<panierReturn.length;i++){
+            for(i=0;i<productFullInformation.length;i++){
 
-                let lSRetour= new Produit(panierReturn[i].id, panierReturn[i].quantite, panierReturn[i].couleur);
+                let lSRetour= new Produit(productFullInformation[i].id, productFullInformation[i].quantite, productFullInformation[i].couleur);
                 let addToPanier = panier.push(lSRetour);
                 //On récupère l'index du produit qui correspond à notre future ajout pour l'insérer au bon emplacement
-                if(panierReturn[i].id===produit.id){
+                if(productFullInformation[i].id===produit.id){
                     positionProduit = i;
                     console.log(positionProduit);
                 }

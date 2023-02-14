@@ -27,7 +27,7 @@ class Produits {
 //-------------------------------------------------LES FONCTIONS-------------------------------------
 //Création des deux tableaux neccessaire au traitement
 var allProduct = [];
-let panierReturn=[];
+let productFullInformation=[];
 //Mise à 0 des valeurs de comptage
 let nbDeValeur=0;
 let totalPrix=0;
@@ -44,18 +44,18 @@ fetch("http://127.0.0.1:3000/api/products")
 .then(function(value) {          
     //-----------------------------Traitement des valeurs recue du BACKEND ---------------------------------------------------
     //On récupére le panier dans le LocalStorage
-    panierReturn = JSON.parse(localStorage.getItem("Panier"));
+    productFullInformation = JSON.parse(localStorage.getItem("Panier"));
         //Pour chaque valeur présente dans le panier Ls
-        for(x=0;x<panierReturn.length;x++){
+        for(x=0;x<productFullInformation.length;x++){
             //Pour chaque valeur dans le JSON recue par le BACKEND
             for(i=0;i<value.length;i++){
                 //On compare le produit dans le LS au produit Backend
-                if(panierReturn[x].id === value[i]._id){
+                if(productFullInformation[x].id === value[i]._id){
                     //On créer un produit contenant toutes ses valeurs BAckend pour le traitement
                     if(action!="delete"){
 
                     
-                    let prodRetour = new Produits(value[i]._id, panierReturn[x].couleur, panierReturn[x].quantite, value[i].name, value[i].imageUrl, value[i].altTxt, value[i].description, value[i].price);
+                    let prodRetour = new Produits(value[i]._id, productFullInformation[x].couleur, productFullInformation[x].quantite, value[i].name, value[i].imageUrl, value[i].altTxt, value[i].description, value[i].price);
                     //On insert une ligne dans allProduct avec ses éléments.
                     let addToTransfert = allProduct.push(prodRetour);
                 }
@@ -181,11 +181,11 @@ for(i=0;i<nbDeValeur;i++){
                             elInputQuantite.setAttribute("value",allProduct[i].quantity);
                             elInputQuantite.addEventListener("change", (e) => {
                                 e.preventDefault;
-                                if(modificationQuantite(idDuProduit, couleurDuProduit, indexDuProduit, elInputQuantite.value)){
+                                if(modificationQuantity(idDuProduit, couleurDuProduit, indexDuProduit, elInputQuantite.value)){
                                     console.log("Modifié dans le Localstorage");
                                 } else {
                                     if(elInputQuantite.value<=0){
-                                        modificationQuantite(idDuProduit, couleurDuProduit, indexDuProduit, 1);
+                                        modificationQuantity(idDuProduit, couleurDuProduit, indexDuProduit, 1);
                                         elInputQuantite.style.border="3px solid red";
                                         elDivError.style.color="red";
                                         elDivError.style.borderRadius="50px";
@@ -194,7 +194,7 @@ for(i=0;i<nbDeValeur;i++){
                                         elDivError.innerHTML="<p>Quantité "+elInputQuantite.value+" impossible<br>il doit etre compris entre 1 et 100.<br>Insertion minimum : 1</p>";
                                         setTimeout(afficherLePanier,4000);
                                     } else if (elInputQuantite.value>100){
-                                        modificationQuantite(idDuProduit, couleurDuProduit, indexDuProduit, 100);
+                                        modificationQuantity(idDuProduit, couleurDuProduit, indexDuProduit, 100);
                                         elInputQuantite.style.border="3px solid red";
                                         elDivError.style.color="red";
                                         elDivError.style.borderRadius="50px";
@@ -243,30 +243,30 @@ document.getElementById("totalPrice").textContent = totalPrix;
 
 }
 //Modification de la quantité
-function modificationQuantite(id, couleur, index, quantiteDuProduit){
+function modificationQuantity(id, couleur, index, quantiteDuProduit){
     
     if(quantiteDuProduit<=0 || quantiteDuProduit>100){
         console.log("La quantité demandée : "+quantiteDuProduit+" est invalide elle doit etre entre 1 et 100");
         return false;
     } else {
     //Dans mon retour panier on vérifie que l'index envoyé corresponde bien à cet article ( id / Couleur)
-    if(panierReturn.indexOf(id) === panierReturn.indexOf(couleur)){
+    if(productFullInformation.indexOf(id) === productFullInformation.indexOf(couleur)){
         //Si c'est bon on modifie la quantité dans la table panierReturn
-        panierReturn[index].quantite = quantiteDuProduit;
+        productFullInformation[index].quantite = quantiteDuProduit;
     }
 
     //Injection des donnée dans le LocalStorage
-    localStorage.setItem("Panier",JSON.stringify(panierReturn));
+    localStorage.setItem("Panier",JSON.stringify(productFullInformation));
     //Quantité modifié => prix et quantité total modifié :
     //On modifie notre table de traitement allProduct
     allProduct[index].quantite = quantiteDuProduit;
-    mAjPrix();
+    modificationPrice();
     return true;
     }
 
 }
 //Mise à jour des prix
-function mAjPrix(){
+function modificationPrice(){
         //On boucle cette table pour compter le nombre de produit et la quantité total
         let compteurPrix = 0;
         let compteurQte = 0;
@@ -289,16 +289,16 @@ function deleteItem(id, couleur, index){
 
     //On supprime dans notre table panierReturn
     //Vérification que le produit identifié soit bon (ID et Couleur)
-    if(panierReturn.indexOf(id) === panierReturn.indexOf(couleur)){
+    if(productFullInformation.indexOf(id) === productFullInformation.indexOf(couleur)){
         //On passe nos lignes produit à VIDE
-        panierReturn[index]="";
+        productFullInformation[index]="";
         allProduct[index]="";
     }
     //On filtre pour enlever les lignes VIDE
-    panierReturn = panierReturn.filter(panierReturn => panierReturn != '');
+    productFullInformation = productFullInformation.filter(panierReturn => panierReturn != '');
     allProduct = allProduct.filter(allProduct => allProduct != '');
     //On envoi le résultat au localStorage
-    localStorage.setItem("Panier",JSON.stringify(panierReturn));
+    localStorage.setItem("Panier",JSON.stringify(productFullInformation));
     recuperation("delete");
     return true;
 }
@@ -315,7 +315,7 @@ let validationPrenom=false;
 let panierReturnId=[];
 //-----------------------------------Les fonctions--------------------------------
 //Controle champ unique selon la valeur
-function verificationDeRemplissage(nomChamp, valeur){
+function controlFormInput(nomChamp, valeur){
     //on récupére le nom du champ
     //let valeurEntree = document.getElementById(nomChamp).value;
     //console.log(valeurEntree.value.length);
@@ -357,7 +357,7 @@ function verificationDeRemplissage(nomChamp, valeur){
 }
 }
 //Controle général pour envoi
-function verification(){
+function sendForm(){
     //On récupére toutes les informations des champs et on test chaque partie indépendamment
     //Si toutes les valeurs renvoies TRUE on valide le panier
         nom = document.getElementById("firstName").value;
@@ -366,12 +366,12 @@ function verification(){
         ville = document.getElementById("city").value;
         email = document.getElementById("email").value;
         //Recupération des dernières infos panier
-        panierReturn = JSON.parse(localStorage.getItem("Panier"));
+        productFullInformation = JSON.parse(localStorage.getItem("Panier"));
         //Pour chaque valeur présente dans le panier Ls
-        for(x=0;x<panierReturn.length;x++){
+        for(x=0;x<productFullInformation.length;x++){
         //Pour chaque valeur dans le JSON recue par le BACKEND
         //on récupère les ID des produits
-        panierReturnId.push(panierReturn[x].id);
+        panierReturnId.push(productFullInformation[x].id);
         }
         let contactforBack = {
             firstName: prenom,
@@ -405,7 +405,7 @@ function verification(){
         
 }
 //Affichage du bouton d'envoi si tout est bon
-function envoiForm(){
+function showHideButtonValidation(){
     if(validationAddress && validationCity && validationEmail && validationNom && validationPrenom){
         console.log("Tous les champs sont bon");
         document.getElementById("order").style.display = "block";
@@ -417,42 +417,42 @@ function envoiForm(){
 //Controle indépendant des champs
 document.getElementById("firstName").addEventListener("change",() => {
     let valeurEntree = document.getElementById("firstName").value;
-    if(verificationDeRemplissage("firstName", valeurEntree)){
+    if(controlFormInput("firstName", valeurEntree)){
         validationNom = true;
-        envoiForm();
+        showHideButtonValidation();
     }
 })
 document.getElementById("lastName").addEventListener("change",() => {
     let valeurEntree = document.getElementById("lastName").value;
-    if(verificationDeRemplissage("lastName", valeurEntree)){
+    if(controlFormInput("lastName", valeurEntree)){
         validationPrenom = true;
-        envoiForm();
+        showHideButtonValidation();
     }
 })
 document.getElementById("address").addEventListener("change",() => {
     let valeurEntree = document.getElementById("address").value;
-    if(verificationDeRemplissage("address", valeurEntree)){
+    if(controlFormInput("address", valeurEntree)){
         validationAddress = true;
-        envoiForm();
+        showHideButtonValidation();
     }
 })
 document.getElementById("city").addEventListener("change",() => {
     let valeurEntree = document.getElementById("city").value;
-    if(verificationDeRemplissage("city", valeurEntree)){
+    if(controlFormInput("city", valeurEntree)){
         validationCity = true;
-        envoiForm();
+        showHideButtonValidation();
     }
 })
 document.getElementById("email").addEventListener("change",() => {
     let valeurEntree = document.getElementById("email").value;
-    if(verificationDeRemplissage("email", valeurEntree)){
+    if(controlFormInput("email", valeurEntree)){
         validationEmail = true;
-        envoiForm();
+        showHideButtonValidation();
     }
 })
 
 //Evenements lors du click formulaire
-document.getElementById("order").addEventListener("click",verification);
+document.getElementById("order").addEventListener("click",sendForm);
 
 //---------------------------------------Execution de la page--------------------------------
 //On masque le bouton de validation
