@@ -410,7 +410,7 @@ function sendForm(){
         contact:contactforBack,
         products:productsIdOrder
     }
-        fetch(`${URL_API}${PORT_API}/${URL_ORDER_PRODUCT}`, {
+        fetch(`${URL_API}:${PORT_API}/${URL_ORDER_PRODUCT}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
