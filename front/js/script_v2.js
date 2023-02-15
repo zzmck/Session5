@@ -1,5 +1,4 @@
 //URL DE L API
-let url_api ="http://127.0.0.1:3000/api";
 let elA;
 let elArticle;
 let elImg;
@@ -8,7 +7,7 @@ let elP;
 
 //######Recuperation du JSON######
 function getProductsApi(){
-    return fetch (`${url_api}/products`)
+    return fetch (`${URL_API}:${PORT_API}/${URL_ALL_PRODUCT}`)
     .then(function(products) {
 
         if (products.ok) {
@@ -59,7 +58,7 @@ function displayProducts(){
     .then(function(product){
         let nbProduct = product.length;    
           for(let i = 0;i < nbProduct; i++){
-            let productLink = `./product.html?id=${product[i]._id}`;
+            let productLink = `${LINK_PRODUCT}${product[i]._id}`;
             let productUrlImage = `${product[i].imageUrl}`;
             let productAltText = `${product[i].altTxt}`;
             let productName = `${product[i].name}`;
@@ -74,12 +73,17 @@ function displayProducts(){
         }
     })
     .catch(function(error) {
-      // Une erreur est survenue
-      alert(`Une erreur est survenue au chargement des produits: ${error}. Merci de revenir.`);
-           
+        errorMsg(`${ALERT_PRODUCTS_LOAD}. <br>${ALERT_COME_BACK_LATER}`);
+        errorMsgConsole(`${ALERT_PRODUCTS_LOAD} ${error}.`);
+    
     });
 }
-
+function errorMsg(message){
+    document.querySelector("#items").innerHTML=`<center>${message}</center>`;
+}
+function errorMsgConsole(message){
+    console.error(message);
+}
 //--------------Chargement de la page------------------
 //On affiche les produits
 displayProducts();

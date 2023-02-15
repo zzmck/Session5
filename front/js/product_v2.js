@@ -1,8 +1,8 @@
 //récupération de l'id produit
 const url = new URL(window.location.href);
 const urlProductId = url.searchParams.get('id');
+
 //URL DE L API
-let url_api ="http://127.0.0.1:3000/api";
 let cartProducts = [];
 let positionProduit;
 //class constructor pour ajout au LS
@@ -17,11 +17,11 @@ class NewLsProduct{
 //Fonctions
 //######Retour à l'index######
 function goToIndex(){
-    document.location.href = "/front/html/index.html";
+    document.location.href = LOCATION_INDEX;
 }
 //######Recuperation du JSON######
 function getProductApi(){
-    return fetch (`${url_api}/products/${urlProductId}`)
+    return fetch (`${URL_API}:${PORT_API}/${URL_ALL_PRODUCT}/${urlProductId}`)
     .then(function(product) {
 
         if (product.ok) {
@@ -44,11 +44,13 @@ function displayProduct(){
         changeProductDescription(product);
         changeProductColorOption(product);
         changeProductQuantityDefault(product);
+        eventListenerAddToCart();
         changeDisplayErrorMsg();
     })
-    .catch(function (error) {
-      alert(`Une erreur est survenue au chargement du produit: ${error}. Merci de revenir.`);
-      goToIndex();
+    .catch(function (error) {        
+        errorMsg(`${ALERT_PRODUCT_LOAD}.<br> ${ALERT_COME_BACK_LATER}`);
+        errorMsgConsole(`${ALERT_PRODUCT_LOAD} ${error}.`);
+        setTimeout(goToIndex, TIME_DURATION_FOR_MESSAGE);
     });
 }
 
@@ -89,6 +91,9 @@ function changeProductQuantityDefault(){
     //Quantite par defaut 1
     document.getElementById("quantity").setAttribute("value", 1);
 }
+function eventListenerAddToCart(){
+document.getElementById("addToCart").addEventListener("click", addToCart);
+}
 
 //######Traitement DOM des messages d erreurs######
 function changeDisplayErrorMsg(){
@@ -100,44 +105,41 @@ function changeDisplayErrorMsg(){
 }
 //######Verification Erreur remplissage#######
 function verificationIsValidColor(){
-    //Couleur non séléctionnée => Erreur
     return ( 
         document.getElementById("colors").value != ""
     );
 }
 function verificationIsValidQuantity(){
-    //Quantite comprise entre 1 et 100 compris => verification OK
   return (
-    document.getElementById("quantity").value >= 1 &&
-    document.getElementById("quantity").value <= 100
+    document.getElementById("quantity").value >= PRODUCT_QUANTITY_MIN &&
+    document.getElementById("quantity").value <= PRODUCT_QUANTITY_MAX
   );
 }
 //######Traitement des différentes erreurs######
 function displayErrorMsgColor(){
-    let msgError = "Merci de choisir une couleur.";
+    let msgError = ALERT_CHOOSE_COLOR;
     messageError(`${msgError}`);
-    //Disparition au bout de 2 secondes
     setTimeout(() => {              
         document.getElementById("messages").innerHTML="";
-    }, 2000);
+    }, TIME_DURATION_FOR_MESSAGE);
 
 }
 function displayErrorMsgQuantity(){
-    let msgError = `Quantité ${document.getElementById("quantity").value} impossible<br>il doit etre compris en 1 et 100.<br>`;
+    let msgError = `${ALERT_QUANTITY} ${document.getElementById("quantity").value} ${ALERT_IMPOSSIBLE}<br>${ALERT_BETWEEN_MIN_MAX}.<br>`;
     let detailMsgError = "";
     //Controle de quantité et action sur le DOM
-    if (document.getElementById("quantity").value <= 0){ 
-        detailMsgError = "Insertion minimum : 1";
-        document.getElementById("quantity").value = 1; 
-    } else if (document.getElementById("quantity").value >= 101){ 
-        detailMsgError = "Insertion maximum : 100";
-        document.getElementById("quantity").value = 100;
+    if (document.getElementById("quantity").value < PRODUCT_QUANTITY_MIN){ 
+        detailMsgError = ALERT_QUANTITY_INSERT_MIN;
+        document.getElementById("quantity").value = PRODUCT_QUANTITY_MIN; 
+    } else if (document.getElementById("quantity").value > PRODUCT_QUANTITY_MAX){ 
+        detailMsgError = ALERT_QUANTITY_INSERT_MAX;
+        document.getElementById("quantity").value = PRODUCT_QUANTITY_MAX;
     }
     messageError(`${msgError} ${detailMsgError}`)
     //Disparition au bout de 2 secondes
     setTimeout(() => {              
         document.getElementById("messages").innerHTML="";
-    }, 2000);
+    }, TIME_DURATION_FOR_MESSAGE);
 }
 //######Traitement des messages de succès#######
 function displaySuccessMsgAddProduct(){
@@ -145,10 +147,10 @@ function displaySuccessMsgAddProduct(){
     document.getElementById("messages").style.borderRadius = "50px";
     document.getElementById("messages").style.backgroundColor = "green";
     document.getElementById("messages").style.textAlign = "center";
-    document.getElementById("messages").innerHTML = "<p>Produit ajouté au panier</p>";
+    document.getElementById("messages").innerHTML = `<p>${ALERT_ADD_TO_CART}</p>`;
     setTimeout(() => {
       document.getElementById("messages").innerHTML = "";
-    }, 2000);
+    }, TIME_DURATION_FOR_MESSAGE);
 }
 function displaySuccessMsgUpdateProduct(){
     //On agit sur le DOM pour afficher le message de modification de quantité
@@ -156,11 +158,11 @@ function displaySuccessMsgUpdateProduct(){
     document.getElementById("messages").style.borderRadius = "50px";
     document.getElementById("messages").style.backgroundColor = "green";
     document.getElementById("messages").style.textAlign = "center";
-    document.getElementById("messages").innerHTML = "<p>Quantité modifiée dans votre panier</p>";
+    document.getElementById("messages").innerHTML = `<p>${ALERT_MODIFICATION_IN_CART}</p>`;
     //Durée d'affichage de 2sec
     setTimeout(() => {
       document.getElementById("messages").innerHTML = "";
-    }, 2000);
+    }, TIME_DURATION_FOR_MESSAGE);
 }
 //######Affichage du message d'erreur########
 function messageError(message){
@@ -170,8 +172,14 @@ function messageError(message){
     document.getElementById("messages").style.backgroundColor="white";
     document.getElementById("messages").style.textAlign="center";                                     
     document.getElementById("messages").innerHTML=`<p>${message}</p>`;
-}
+}  
+function errorMsg(message){
+    document.querySelector(".item").innerHTML=`<center>${message}</center>`;
 
+}
+function errorMsgConsole(message){
+    console.error(message);
+}
 //######Ajout au panier#########
 function addToCart(){
      //Vérification des quantités
@@ -271,5 +279,3 @@ function productAlreadyExist(){
 //--------------Chargement de la page------------------
 //On affiche le produit
 displayProduct();
-//Click pour ajout au panier
-document.getElementById("addToCart").addEventListener("click", addToCart);

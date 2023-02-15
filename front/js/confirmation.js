@@ -5,7 +5,7 @@ const urlId = url.searchParams.get('orderId');
 
 //######Retour au panier######
 function goToCart(){
-    document.location.href = "/front/html/cart.html";
+    document.location.href = LOCATION_CART;
 }
 function messageError(message){
     document.querySelector(".confirmation").innerHTML = `<p>${message}</p>`;
@@ -13,13 +13,12 @@ function messageError(message){
 function displayConfirmation(){
 if(urlId === null){
     document.querySelector(".confirmation").textContent = "";
-    let msgError = "Une erreur est survenue,<br>Retour au panier.";
-    messageError(`${msgError}`);
+    messageError(ALERT_CONFIRMATION_CART);
     //Disparition au bout de 2 secondes
     setTimeout(() => {              
         document.querySelector(".confirmation").textContent = "";
         goToCart();
-    }, 2000);
+    }, TIME_DURATION_FOR_MESSAGE);
 
 } else {
     let orderId = (document.querySelector("#orderId").textContent = urlId);
