@@ -35,5 +35,7 @@ const ALERT_FORM_NO_NUMBER = "Le champ ne doit pas contenir de nombre [0-9]";
 const ALERT_FORM_NO_SPECIAL_CARACTERS = "Le champ ne doit pas contenir de caractères spéciaux";
 const ALERT_FORM_EMAIL = "L'email doit etre sous la forme : 'mail@mail.fr' et ne doit pas contenir d'espace";
 const ALERT_FORM_SUCCESS = "Valide";
+const ALERT_BUTTON_VALIDATION_ENABLE = "Valider la commande";
+const ALERT_BUTTON_VALIDATION_DISABLE = "Merci de compléter le formulaire";
 const ALERT_CONFIRMATION_CART = "Une erreur est survenue,<br>Retour au panier.";
 const ALERT_CART_IS_EMPTY = "<h1>Votre Panier</h1><h2><center>Votre Panier est vide</center></h2>";

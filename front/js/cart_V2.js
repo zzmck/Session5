@@ -349,11 +349,11 @@ function disableEnableButtonValidation(){
     }
 }
 function enableButtonValidation(){
-    document.getElementById("order").setAttribute("value", "Valider la commande");
+    document.getElementById("order").setAttribute("value", ALERT_BUTTON_VALIDATION_ENABLE);
     document.getElementById("order").removeAttribute("disabled");
 }
 function disableButtonValidation(){
-    document.getElementById("order").setAttribute("value", "Merci de compléter le formulaire");
+    document.getElementById("order").setAttribute("value", ALERT_BUTTON_VALIDATION_DISABLE);
     document.getElementById("order").setAttribute("disabled", "disabled");    
 }
 function errorFormMsg(inputName,errorColor,message){
