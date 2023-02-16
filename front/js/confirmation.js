@@ -14,7 +14,6 @@ function displayConfirmation(){
 if(urlId === null){
     document.querySelector(".confirmation").textContent = "";
     messageError(ALERT_CONFIRMATION_CART);
-    //Disparition au bout de 2 secondes
     setTimeout(() => {              
         document.querySelector(".confirmation").textContent = "";
         goToCart();
@@ -22,7 +21,6 @@ if(urlId === null){
 
 } else {
     let orderId = (document.querySelector("#orderId").textContent = urlId);
-    //effacement du LocalStorage
     localStorage.clear("Panier");
 }
 }

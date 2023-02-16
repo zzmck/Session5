@@ -2,10 +2,12 @@
 const url = new URL(window.location.href);
 const urlProductId = url.searchParams.get('id');
 
-//URL DE L API
+//Déclaration des variables
 let cartProducts = [];
 let positionProduit;
-//class constructor pour ajout au LS
+
+//--------------------------CLASSE CONSTRUCTOR---------------------------------------------
+//#####Ajout au LocalStorage#####
 class NewLsProduct{
     constructor(id, quantity, color){
         this.id = id;
@@ -14,7 +16,7 @@ class NewLsProduct{
     }
 }
 
-//Fonctions
+//###########Fonctions###########
 //######Retour à l'index######
 function goToIndex(){
     document.location.href = LOCATION_INDEX;
@@ -56,40 +58,31 @@ function displayProduct(){
 
 //######Traitement DOM du produit########
 function changeProductTitlePage(product){
-    //Titre de la page
     document.querySelector("title").textContent = product.name;
 }
 function changeProductTitle(product){
-    //titre du produit
     document.getElementById("title").textContent = product.name;
 }
 function changeProductImage(product){
-    //Image du produit
     let elImg = document.createElement("img");
     document.querySelector(".item__img").appendChild(elImg);
     elImg.setAttribute("src", product.imageUrl);
     elImg.setAttribute("alt", `${product.altTxt},${product.name}`);
 }
 function changeProductPrice(product){
-    //Prix du produit
     document.getElementById("price").textContent = product.price;
 }
 function changeProductDescription(product){
-    //description du produit
     document.getElementById("description").textContent = product.description;
 }
 function changeProductColorOption(product){
-    //Les options de couleurs
     let nbColors = product.colors.length;
-    //Boucle pour insertion
       for(let i =0;i < nbColors; i++){
         document.getElementById("colors").innerHTML += `<option value='${product.colors[i]}'>${product.colors[i]}</option>`;
-        //document.getElementById("colors").innerHTML += "<option value='" + product.colors[i] + "'>" + product.colors[i] + "</option>";
       }
 }
 function changeProductQuantityDefault(){
-    //Quantite par defaut 1
-    document.getElementById("quantity").setAttribute("value", 1);
+    document.getElementById("quantity").setAttribute("value", PRODUCT_QUANTITY_MIN);
 }
 function eventListenerAddToCart(){
 document.getElementById("addToCart").addEventListener("click", addToCart);
@@ -122,12 +115,10 @@ function displayErrorMsgColor(){
     setTimeout(() => {              
         document.getElementById("messages").innerHTML="";
     }, TIME_DURATION_FOR_MESSAGE);
-
 }
 function displayErrorMsgQuantity(){
     let msgError = `${ALERT_QUANTITY} ${document.getElementById("quantity").value} ${ALERT_IMPOSSIBLE}<br>${ALERT_BETWEEN_MIN_MAX}.<br>`;
     let detailMsgError = "";
-    //Controle de quantité et action sur le DOM
     if (document.getElementById("quantity").value < PRODUCT_QUANTITY_MIN){ 
         detailMsgError = ALERT_QUANTITY_INSERT_MIN;
         document.getElementById("quantity").value = PRODUCT_QUANTITY_MIN; 
@@ -136,7 +127,6 @@ function displayErrorMsgQuantity(){
         document.getElementById("quantity").value = PRODUCT_QUANTITY_MAX;
     }
     messageError(`${msgError} ${detailMsgError}`)
-    //Disparition au bout de 2 secondes
     setTimeout(() => {              
         document.getElementById("messages").innerHTML="";
     }, TIME_DURATION_FOR_MESSAGE);
@@ -147,26 +137,23 @@ function displaySuccessMsgAddProduct(){
     document.getElementById("messages").style.borderRadius = "50px";
     document.getElementById("messages").style.backgroundColor = "green";
     document.getElementById("messages").style.textAlign = "center";
-    document.getElementById("messages").innerHTML = `<p>${ALERT_ADD_TO_CART}</p>`;
+    document.getElementById("messages").innerHTML = `<p>${SUCCESS_ADD_TO_CART}</p>`;
     setTimeout(() => {
       document.getElementById("messages").innerHTML = "";
     }, TIME_DURATION_FOR_MESSAGE);
 }
 function displaySuccessMsgUpdateProduct(){
-    //On agit sur le DOM pour afficher le message de modification de quantité
     document.getElementById("messages").style.color = "white";
     document.getElementById("messages").style.borderRadius = "50px";
     document.getElementById("messages").style.backgroundColor = "green";
     document.getElementById("messages").style.textAlign = "center";
-    document.getElementById("messages").innerHTML = `<p>${ALERT_MODIFICATION_IN_CART}</p>`;
-    //Durée d'affichage de 2sec
+    document.getElementById("messages").innerHTML = `<p>${SUCCESS_MODIFICATION_IN_CART}</p>`;
     setTimeout(() => {
       document.getElementById("messages").innerHTML = "";
     }, TIME_DURATION_FOR_MESSAGE);
 }
 //######Affichage du message d'erreur########
 function messageError(message){
-    //On agit sur le DOM pour afficher le message d'erreur
     document.getElementById("messages").style.color="red";
     document.getElementById("messages").style.borderRadius="50px";
     document.getElementById("messages").style.backgroundColor="white";
@@ -175,24 +162,20 @@ function messageError(message){
 }  
 function errorMsg(message){
     document.querySelector(".item").innerHTML=`<center>${message}</center>`;
-
 }
 function errorMsgConsole(message){
     console.error(message);
 }
 //######Ajout au panier#########
 function addToCart(){
-     //Vérification des quantités
     if (!verificationIsValidQuantity()) {
       displayErrorMsgQuantity();
       return;
     }
-    //Vérification de la couleur
     if (!verificationIsValidColor()) {
       displayErrorMsgColor();
       return;
     }
-    //Si la couleur et la quantité est correct on créer un produit à insérer
   let selectedQuantity = document.getElementById("quantity").value;
   let selectedColor = document.getElementById("colors").value;
   let addedProduct = new NewLsProduct(
@@ -200,19 +183,13 @@ function addToCart(){
     selectedQuantity,
     selectedColor
   );
-   //ANALYSE DU LS
-  //récupération du LS
   getLocalStorage();
-  //Si le LS contient l'article correspondant à la couleur et à l'ID
   let productInCart = productIsInCart(addedProduct.id, addedProduct.color); 
   let productIdInCart = productIdIsInCart(addedProduct.id, addedProduct.color);
   if (productInCart == null) {
     if (productIdInCart == null) {   
-    //Pas d'ID correspondant dans le tableau
         cartProducts.push(addedProduct);
     } else {
-        //Id déjà connu et couleur différente
-        //On l'insert à la suite du précedent
     for (i=0;i<cartProducts.length;i++){
         if(cartProducts[i].id === addedProduct.id){
             cartProducts.splice(i,0, addedProduct);
@@ -222,13 +199,10 @@ function addToCart(){
     }
     displaySuccessMsgAddProduct();
   } else {
-    //ID et Couleur identique on modifie la quantité
     productInCart.quantity = Number(addedProduct.quantity);
-    
     displaySuccessMsgUpdateProduct();
   }
   updateLocalStorage();
-
 }
 function getLocalStorage(){
     if (localStorage.length != 0) return cartProducts = JSON.parse(localStorage.getItem("Panier"));
@@ -236,14 +210,12 @@ function getLocalStorage(){
 }
 
 function updateLocalStorage(){
-    //Pour toutes les valeurs du tableau cartProduct on insert dans le localstorage
     for (i = 0; i < cartProducts.length; i++) {
       localStorage.setItem("Panier", JSON.stringify(cartProducts));
     }
 }
 function productIdIsInCart(productId, productColor){  
     let products = cartProducts
-    //Filtre le panier => Si un element correspond aux meme critères on le retourne dans la fonction.
     .filter(function (cartProduct) {
       return (
         cartProduct.id === productId && cartProduct.color != productColor
@@ -254,7 +226,6 @@ function productIdIsInCart(productId, productColor){
 }
 function productIsInCart(productId, productColor){  
     let products = cartProducts
-    //Filtre le panier => Si un element correspond aux meme critères on le retourne dans la fonction.
     .filter(function (cartProduct) {
       return (
         cartProduct.id === productId && cartProduct.color === productColor
@@ -264,9 +235,7 @@ function productIsInCart(productId, productColor){
     else return null;
 }
 function productAlreadyExist(){
-    //pour toutes les valeurs dans le LS on vérifie la présence de l'ID
     for(i=0;i<cartProducts.length;i++){
-    //On récupère l'index du produit qui correspond à notre future ajout pour l'insérer au bon emplacement
         if(cartProducts[i].id===produit.id){
             positionProduit = i;
             return true;
@@ -277,5 +246,4 @@ function productAlreadyExist(){
 }
 
 //--------------Chargement de la page------------------
-//On affiche le produit
 displayProduct();

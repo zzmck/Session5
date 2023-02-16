@@ -1,11 +1,7 @@
-//URL DE L API
-let elA;
-let elArticle;
-let elImg;
-let elH3;
-let elP;
+//Déclaration des variables
+let elA,elArticle,elImg,elH3,elP;
 
-//######Recuperation du JSON######
+//######Recuperation du JSON de l'API######
 function getProductsApi(){
     return fetch (`${URL_API}:${PORT_API}/${URL_ALL_PRODUCT}`)
     .then(function(products) {
@@ -18,33 +14,33 @@ function getProductsApi(){
 
     });
 }
-
-//######Traitement DOM du produit########
+//######   DOM   ######
+//######Modification de l'url du produit######
 function changeProductLink(productsInc){
     elA = document.createElement("a");
     document.querySelector("#items").appendChild(elA);
     elA.setAttribute("href", productsInc);
 }
-
+//######Modification du produit Article######
 function changeProductArticle(){
     elArticle = document.createElement("article");
     elA.appendChild(elArticle);
 }
-
+//######Modification de l'image######
 function changeProductImage(productsIncUrl,productsIncAlt){
     elImg =document.createElement("img");
     elArticle.appendChild(elImg);
     elImg.setAttribute("src", productsIncUrl);
     elImg.setAttribute("alt", productsIncAlt);
 }
-
+//######Modification du titre######
 function changeProductTitle(productsInc){
     elH3 = document.createElement("H3");
     elArticle.appendChild(elH3);
     elH3.className= "productName";
     elH3.innerHTML= productsInc;
 }
-
+//######Modification de la description######
 function changeProductDescription(productsInc){
     elP = document.createElement("p");
     elArticle.appendChild(elP);
@@ -52,7 +48,7 @@ function changeProductDescription(productsInc){
     elP.innerHTML= productsInc;
 }
 
-//Affichage des produits en boucle
+//######Affichage du produit######
 function displayProducts(){
     getProductsApi()
     .then(function(product){
@@ -78,12 +74,15 @@ function displayProducts(){
     
     });
 }
+//######Les erreurs######
+//######Affichage des messages d'erreurs sur la page######
 function errorMsg(message){
     document.querySelector("#items").innerHTML=`<center>${message}</center>`;
 }
+//######Affichage des messages d'erreurs dans la console######
 function errorMsgConsole(message){
     console.error(message);
 }
-//--------------Chargement de la page------------------
-//On affiche les produits
+
+//######Chargement de la page######
 displayProducts();
