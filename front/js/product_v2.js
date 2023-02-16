@@ -89,6 +89,9 @@ function changeProductColorOption(product){
 }
 //#####Quantité par défaut à l'affichage#####
 function changeProductQuantityDefault(){
+    document.querySelector(".item__content__settings__quantity").children[0].textContent=PRODUCT_TITLE_QUANTITY;
+    document.getElementById("quantity").setAttribute("min", PRODUCT_QUANTITY_MIN);
+    document.getElementById("quantity").setAttribute("max", PRODUCT_QUANTITY_MAX);
     document.getElementById("quantity").setAttribute("value", PRODUCT_QUANTITY_MIN);
 }
 //#####Création d un event listener pour l'ajout au panier#####

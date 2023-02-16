@@ -13,6 +13,7 @@ const LINK_PRODUCT = "./product.html?id=";
 //##########Déclarations des quantités min et max#########
 const PRODUCT_QUANTITY_MIN = 1;
 const PRODUCT_QUANTITY_MAX = 100;
+const PRODUCT_TITLE_QUANTITY = `Nombre d'article(s) (${PRODUCT_QUANTITY_MIN}-${PRODUCT_QUANTITY_MAX}) :`;
 //##########Durée d'apparition des messages##########
 const TIME_DURATION_FOR_MESSAGE = 2000;
 //##########Les messages d'erreurs###########
