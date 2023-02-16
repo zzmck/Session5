@@ -1,5 +1,5 @@
 
-//Récupération de l'url
+//Récupération de l'url et de l'ID
 const url = new URL(window.location.href);
 const urlId = url.searchParams.get('orderId');
 
@@ -7,9 +7,11 @@ const urlId = url.searchParams.get('orderId');
 function goToCart(){
     document.location.href = LOCATION_CART;
 }
+//#####Affichage des messages d'erreurs#####
 function messageError(message){
     document.querySelector(".confirmation").innerHTML = `<p>${message}</p>`;
 }
+//#####Traitement de confirmation de commande#####
 function displayConfirmation(){
 if(urlId === null){
     document.querySelector(".confirmation").textContent = "";
@@ -24,5 +26,6 @@ if(urlId === null){
     localStorage.clear("Panier");
 }
 }
+
 //---------------Affichage de la page----------------
 displayConfirmation();

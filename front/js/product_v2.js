@@ -1,4 +1,4 @@
-//récupération de l'id produit
+//récupération de l'url et de l'id produit
 const url = new URL(window.location.href);
 const urlProductId = url.searchParams.get('id');
 
@@ -7,7 +7,7 @@ let cartProducts = [];
 let positionProduit;
 
 //--------------------------CLASSE CONSTRUCTOR---------------------------------------------
-//#####Ajout au LocalStorage#####
+//#####Pour jout produit au LocalStorage#####
 class NewLsProduct{
     constructor(id, quantity, color){
         this.id = id;
@@ -57,33 +57,41 @@ function displayProduct(){
 }
 
 //######Traitement DOM du produit########
+//#####Titre de la page#####
 function changeProductTitlePage(product){
     document.querySelector("title").textContent = product.name;
 }
+//#####Titre du produit#####
 function changeProductTitle(product){
     document.getElementById("title").textContent = product.name;
 }
+//#####Image du produit#####
 function changeProductImage(product){
     let elImg = document.createElement("img");
     document.querySelector(".item__img").appendChild(elImg);
     elImg.setAttribute("src", product.imageUrl);
     elImg.setAttribute("alt", `${product.altTxt},${product.name}`);
 }
+//#####Prix du produit#####
 function changeProductPrice(product){
     document.getElementById("price").textContent = product.price;
 }
+//#####Description du produit######
 function changeProductDescription(product){
     document.getElementById("description").textContent = product.description;
 }
+//#####Les couleurs du produit######
 function changeProductColorOption(product){
     let nbColors = product.colors.length;
       for(let i =0;i < nbColors; i++){
         document.getElementById("colors").innerHTML += `<option value='${product.colors[i]}'>${product.colors[i]}</option>`;
       }
 }
+//#####Quantité par défaut à l'affichage#####
 function changeProductQuantityDefault(){
     document.getElementById("quantity").setAttribute("value", PRODUCT_QUANTITY_MIN);
 }
+//#####Création d un event listener pour l'ajout au panier#####
 function eventListenerAddToCart(){
 document.getElementById("addToCart").addEventListener("click", addToCart);
 }
@@ -96,19 +104,20 @@ function changeDisplayErrorMsg(){
     elDivError.style.width="90%";
     elDivError.setAttribute("id", "messages");
 }
-//######Verification Erreur remplissage#######
+//######Verification Erreur couleur valide#######
 function verificationIsValidColor(){
     return ( 
         document.getElementById("colors").value != ""
     );
 }
+//######Verification Erreur quantité valide#####
 function verificationIsValidQuantity(){
   return (
     document.getElementById("quantity").value >= PRODUCT_QUANTITY_MIN &&
     document.getElementById("quantity").value <= PRODUCT_QUANTITY_MAX
   );
 }
-//######Traitement des différentes erreurs######
+//######Affichage DOM Erreur couleur valide######
 function displayErrorMsgColor(){
     let msgError = ALERT_CHOOSE_COLOR;
     messageError(`${msgError}`);
@@ -116,6 +125,7 @@ function displayErrorMsgColor(){
         document.getElementById("messages").innerHTML="";
     }, TIME_DURATION_FOR_MESSAGE);
 }
+//######Affichage DOM Erreur quantité valide#####
 function displayErrorMsgQuantity(){
     let msgError = `${ALERT_QUANTITY} ${document.getElementById("quantity").value} ${ALERT_IMPOSSIBLE}<br>${ALERT_BETWEEN_MIN_MAX}.<br>`;
     let detailMsgError = "";
@@ -132,6 +142,7 @@ function displayErrorMsgQuantity(){
     }, TIME_DURATION_FOR_MESSAGE);
 }
 //######Traitement des messages de succès#######
+//#####Message de succés pour l'ajout d'un produit au panier#####
 function displaySuccessMsgAddProduct(){
     document.getElementById("messages").style.color = "white";
     document.getElementById("messages").style.borderRadius = "50px";
@@ -142,6 +153,7 @@ function displaySuccessMsgAddProduct(){
       document.getElementById("messages").innerHTML = "";
     }, TIME_DURATION_FOR_MESSAGE);
 }
+//#####Message de succés pour la mise à jour d'un produit au panier#####
 function displaySuccessMsgUpdateProduct(){
     document.getElementById("messages").style.color = "white";
     document.getElementById("messages").style.borderRadius = "50px";
@@ -152,7 +164,7 @@ function displaySuccessMsgUpdateProduct(){
       document.getElementById("messages").innerHTML = "";
     }, TIME_DURATION_FOR_MESSAGE);
 }
-//######Affichage du message d'erreur########
+//######Mise en forme DOM pour les message d'erreurs########
 function messageError(message){
     document.getElementById("messages").style.color="red";
     document.getElementById("messages").style.borderRadius="50px";
@@ -160,12 +172,15 @@ function messageError(message){
     document.getElementById("messages").style.textAlign="center";                                     
     document.getElementById("messages").innerHTML=`<p>${message}</p>`;
 }  
+//#####Affichage des erreurs sur la page#####
 function errorMsg(message){
     document.querySelector(".item").innerHTML=`<center>${message}</center>`;
 }
+//#####Affichage des erreurs dans la console#####
 function errorMsgConsole(message){
     console.error(message);
 }
+
 //######Ajout au panier#########
 function addToCart(){
     if (!verificationIsValidQuantity()) {
@@ -204,16 +219,19 @@ function addToCart(){
   }
   updateLocalStorage();
 }
+//#####Récupération du localstorage en JSON#####
 function getLocalStorage(){
     if (localStorage.length != 0) return cartProducts = JSON.parse(localStorage.getItem("Panier"));
     else return null;
 }
-
+//#####Mise à jour du Locastorage#####
 function updateLocalStorage(){
     for (i = 0; i < cartProducts.length; i++) {
       localStorage.setItem("Panier", JSON.stringify(cartProducts));
     }
 }
+
+//#####Vérification de la présence du produit dans le panier avec une couleur différente######
 function productIdIsInCart(productId, productColor){  
     let products = cartProducts
     .filter(function (cartProduct) {
@@ -224,6 +242,7 @@ function productIdIsInCart(productId, productColor){
     if(products.length > 0 ) return products[0];
     else return null;
 }
+//#####Vérification de la présence du produit dans le panier avec la meme couleur######
 function productIsInCart(productId, productColor){  
     let products = cartProducts
     .filter(function (cartProduct) {
@@ -234,6 +253,7 @@ function productIsInCart(productId, productColor){
     if(products.length > 0 ) return products[0];
     else return null;
 }
+//#####Récupération de la position d'index du produit déja existant#####
 function productAlreadyExist(){
     for(i=0;i<cartProducts.length;i++){
         if(cartProducts[i].id===produit.id){
