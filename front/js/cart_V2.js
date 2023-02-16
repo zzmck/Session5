@@ -343,20 +343,24 @@ function controlFormInput(inputName, inputValue){
 }
 function disableEnableButtonValidation(){
     if(validationAddress && validationCity && validationEmail && validationNom && validationPrenom){
-        document.getElementById("order").style.display = "block";
-        document.getElementById("order").setAttribute("value", "Valider la commande");
-        document.getElementById("order").removeAttribute("disabled");
+        enableButtonValidation();
     } else {
-        document.getElementById("order").style.display = "block";
-        document.getElementById("order").setAttribute("value", "Merci de compléter le formulaire");
-        document.getElementById("order").setAttribute("disabled", "disabled");
+        disableButtonValidation();
     }
+}
+function enableButtonValidation(){
+    document.getElementById("order").setAttribute("value", "Valider la commande");
+    document.getElementById("order").removeAttribute("disabled");
+}
+function disableButtonValidation(){
+    document.getElementById("order").setAttribute("value", "Merci de compléter le formulaire");
+    document.getElementById("order").setAttribute("disabled", "disabled");    
 }
 function errorFormMsg(inputName,errorColor,message){
     document.getElementById(inputName + "ErrorMsg").textContent = message;    
     document.getElementById(inputName).style.border=`3px solid ${errorColor}`;
     document.getElementById(inputName + "ErrorMsg").style.color = errorColor;
-    document.getElementById("order").style.display = "none";
+    disableButtonValidation();
 }
 function errorMsgQuantity(productPriceAlone, productIndex){
     let msgError = `${ALERT_QUANTITY}<br>${ALERT_BETWEEN_MIN_MAX}.<br>`;
