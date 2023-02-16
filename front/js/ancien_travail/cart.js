@@ -405,7 +405,7 @@ function sendForm(){
         
 }
 //Affichage du bouton d'envoi si tout est bon
-function showHideButtonValidation(){
+function disableEnableButtonValidation(){
     if(validationAddress && validationCity && validationEmail && validationNom && validationPrenom){
         console.log("Tous les champs sont bon");
         document.getElementById("order").style.display = "block";
@@ -419,35 +419,35 @@ document.getElementById("firstName").addEventListener("change",() => {
     let valeurEntree = document.getElementById("firstName").value;
     if(controlFormInput("firstName", valeurEntree)){
         validationNom = true;
-        showHideButtonValidation();
+        disableEnableButtonValidation();
     }
 })
 document.getElementById("lastName").addEventListener("change",() => {
     let valeurEntree = document.getElementById("lastName").value;
     if(controlFormInput("lastName", valeurEntree)){
         validationPrenom = true;
-        showHideButtonValidation();
+        disableEnableButtonValidation();
     }
 })
 document.getElementById("address").addEventListener("change",() => {
     let valeurEntree = document.getElementById("address").value;
     if(controlFormInput("address", valeurEntree)){
         validationAddress = true;
-        showHideButtonValidation();
+        disableEnableButtonValidation();
     }
 })
 document.getElementById("city").addEventListener("change",() => {
     let valeurEntree = document.getElementById("city").value;
     if(controlFormInput("city", valeurEntree)){
         validationCity = true;
-        showHideButtonValidation();
+        disableEnableButtonValidation();
     }
 })
 document.getElementById("email").addEventListener("change",() => {
     let valeurEntree = document.getElementById("email").value;
     if(controlFormInput("email", valeurEntree)){
         validationEmail = true;
-        showHideButtonValidation();
+        disableEnableButtonValidation();
     }
 })
 

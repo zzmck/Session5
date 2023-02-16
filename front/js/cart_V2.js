@@ -111,7 +111,7 @@ function displayCart(productFullInformation){
          changeDomDivQuantity(productId,productColor,productIndex,productQuantity,productPriceAlone,productPriceByQuantity);
          changeDomDivDelete(productIndex);
          eventListenerform();
-         showHideButtonValidation();
+         disableEnableButtonValidation();
          eventListenerSendForm();
      }
      countTotalPrice();
@@ -288,35 +288,35 @@ function eventListenerform(){
         let inputValue = document.getElementById("firstName").value;
         if(controlFormInput("firstName", inputValue)){
             validationNom = true;
-            showHideButtonValidation();
+            disableEnableButtonValidation();
         }
     })
     document.getElementById("lastName").addEventListener("change",() => {
         let inputValue = document.getElementById("lastName").value;
         if(controlFormInput("lastName", inputValue)){
             validationPrenom = true;
-            showHideButtonValidation();
+            disableEnableButtonValidation();
         }
     })
     document.getElementById("address").addEventListener("change",() => {
         let inputValue = document.getElementById("address").value;
         if(controlFormInput("address", inputValue)){
             validationAddress = true;
-            showHideButtonValidation();
+            disableEnableButtonValidation();
         }
     })
     document.getElementById("city").addEventListener("change",() => {
         let inputValue = document.getElementById("city").value;
         if(controlFormInput("city", inputValue)){
             validationCity = true;
-            showHideButtonValidation();
+            disableEnableButtonValidation();
         }
     })
     document.getElementById("email").addEventListener("change",() => {
         let inputValue = document.getElementById("email").value;
         if(controlFormInput("email", inputValue)){
             validationEmail = true;
-            showHideButtonValidation();
+            disableEnableButtonValidation();
         }
     })
 }
@@ -341,11 +341,15 @@ function controlFormInput(inputName, inputValue){
     return true;
 }
 }
-function showHideButtonValidation(){
+function disableEnableButtonValidation(){
     if(validationAddress && validationCity && validationEmail && validationNom && validationPrenom){
         document.getElementById("order").style.display = "block";
+        document.getElementById("order").setAttribute("value", "Valider la commande");
+        document.getElementById("order").removeAttribute("disabled");
     } else {
-        document.getElementById("order").style.display = "none";
+        document.getElementById("order").style.display = "block";
+        document.getElementById("order").setAttribute("value", "Merci de compléter le formulaire");
+        document.getElementById("order").setAttribute("disabled", "disabled");
     }
 }
 function errorFormMsg(inputName,errorColor,message){
