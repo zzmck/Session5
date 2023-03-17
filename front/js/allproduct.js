@@ -1,5 +1,5 @@
 //importation de l'application Shop
-import {Application} from './shopModule/application.js';
+import {Application} from './application.js';
 //----------------------
 //Class d'initialisation
 //----------------------

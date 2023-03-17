@@ -55,7 +55,6 @@ export class Application{
     //Application pour un produit
     showOneProduct(input){
         new Template(input).oneProduct();
-        
     }
     //Application Panier
     showCart(){

@@ -1,5 +1,5 @@
 //importation de l'application Shop
-import {Application} from './shopModule/application.js';
+import {Application} from './application.js';
 
 //Récupération de l'ID du produit demandé
 const url = new URL(window.location.href);
