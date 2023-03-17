@@ -1,5 +1,5 @@
 //importation de l'application Shop
-import {Application} from './application.js';
+import {Application} from './shopModule/application.js';
 //----------------------
 //Class d'initialisation
 //----------------------
@@ -8,7 +8,7 @@ class init{
         this.shop = null;
     }
     init(){
-        this.shop = new Application({view:"confirmation"});
+        this.shop = new Application({view:"all"});
         this.shop.get();
     }
 }

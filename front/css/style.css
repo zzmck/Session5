@@ -214,7 +214,82 @@ footer .footerSecondary {
 }
 
 
-
+/****************/
+/*Messages alert*/
+/****************/
+/*.divMessageError{
+	display:hidden;
+	bottom:0;
+	position:fixed; 
+	height: 50px;
+	width: 90%;
+	background-color: red;
+	color: white;
+}
+.divMessageAlert{
+	display:hidden;
+	bottom:0;
+	position:fixed; 
+	height: 50px;
+	width: 90%;
+	background-color: orange;
+	color: white;
+}*/
+.divHidden{
+	display:none;
+}
+.divMessage{
+	display:flex;
+	top:5px;
+	position:fixed; 
+	width: 90%;
+	height:50px;
+	border-radius: 50Px;
+	color: white;
+	align-items: center;
+	justify-content: center;
+}
+.divMessageAlerts{
+	display:flex;
+	top:65px;
+	position:fixed; 
+	width: 90%;
+	height:50px;
+	border-radius: 50Px;
+	color: white;
+	align-items: center;
+	justify-content: center;
+}
+.success{
+	animation-duration: 3s;
+	animation-name: test;
+	animation-iteration-count: 1;
+	background-color: green;
+}
+.alert{
+	animation-duration: 1.5s;
+	animation-name: test;
+	animation-iteration-count: 1;
+	background-color: orange;
+}
+.error{
+	animation-duration: 1.5s;
+	animation-name: test;
+	animation-iteration-count: 1;
+	background-color: red;
+}
+@keyframes test{
+	0%{
+		opacity:0;
+	}
+	50%
+	{
+		opacity:1;
+	}
+	100%{
+		opacity:0;
+	}
+}
 
 /***************/
 /*Media queries*/

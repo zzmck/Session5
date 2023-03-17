@@ -8,7 +8,7 @@ class init{
         this.shop = null;
     }
     init(){
-        this.shop = new Application({view:"confirmation"});
+        this.shop = new Application({view:"cart"});
         this.shop.get();
     }
 }
