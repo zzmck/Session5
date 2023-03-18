@@ -161,7 +161,7 @@ export class Application{
 //------------------------------
 //Class fonctionnement du panier
 //------------------------------
-export class Cart{
+class Cart{
     constructor(){
         let cartLs = localStorage.getItem('panier');
         if(cartLs === null){
@@ -254,7 +254,7 @@ export class Cart{
 //------------------------------
 //Class utile aux affichages DOM
 //------------------------------
-export class Template{
+class Template{
     constructor(options){
         var defaultOptions = {
             _id         :   "id error",
@@ -423,7 +423,7 @@ export class Template{
 //------------------------------
 //Class de controle des elements
 //------------------------------
-export class Controls{
+class Controls{
     //Controle de la quantité des produits du panier
     quantityCart(indexItem){
         let resultIndex=indexItem.target.attributes.name.nodeValue;
