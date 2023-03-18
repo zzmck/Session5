@@ -1,4 +1,3 @@
-const urlProductId =WINDOW_URL.searchParams.get('id');
 //---------------------------------------------------
 //Class Application Client <=> Backend, Client <=> Ls
 //---------------------------------------------------
@@ -104,7 +103,7 @@ export class Application{
         }
         let selectedQuantity = document.getElementById("quantity").value;
         let selectedColor = document.getElementById("colors").value;
-         
+        let urlProductId =WINDOW_URL.searchParams.get('id');
         new Cart().add({id:urlProductId, color:selectedColor, quantity:selectedQuantity});
         new Template().showMessages("success",MESSAGE_SUCCESS_ADDTOCART);
     }
