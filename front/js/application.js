@@ -28,7 +28,7 @@ export class Application{
              return products.json();
         }
     }
-    //Resultat oneProduct BackEND => selon la page demandée lancement de l'application
+    //Resultat AllProduct BackEND => selon la page demandée lancement de l'application
     get_all_products(){
         var Api = this;
             this.connectAPIAllProducts()
@@ -43,22 +43,23 @@ export class Application{
                 }
             })
             .catch(function(error) {
-                new Template().showMessages("error",MESSAGE_ERROR_API+" : " + error);
-            
+                new Template().messageErrorAPI(error);
             })
         
     }
-    //Resultat allProducts BackEND => selon la page demandée lancement de l'application
+    //Resultat OneProducts BackEND
     get_one_product(){
      var Api = this;
-    this.connectAPIOneProduct()
+        this.connectAPIOneProduct()
         .then(function(result){
-            if(Api.view === "oneId"){
+            if(!result){
+                new Template().messageErrorAPI(MESSAGE_ERROR_PRODUCTNOTFOUND);
+            }else if(Api.view === "oneId"){
                 Api.showOneProduct(result);
             }
         })
         .catch(function(error) {
-            new Template().showMessages("error",MESSAGE_ERROR_API+" : " + error);
+            new Template().messageErrorAPI(error);
         })
     }
     //Application Tous les produits
@@ -95,7 +96,7 @@ export class Application{
             new Cart().totalCartPrice();
         }
     }
-    //Aplication Ajout au panier
+    //Application Ajout au panier
     addTocart(){
         if(!new Controls().color("colors")){
             new Template().showMessages("error",MESSAGE_ERROR_SELECTCOLOR);
@@ -107,7 +108,7 @@ export class Application{
         new Cart().add({id:urlProductId, color:selectedColor, quantity:selectedQuantity});
         new Template().showMessages("success",MESSAGE_SUCCESS_ADDTOCART);
     }
-    //application Envoi du formulaire de commande
+    //Application Envoi du formulaire de commande
     sendForm(){
         let productsIdOrder=[];
         let productsLs=JSON.parse(localStorage.getItem("panier"));     
@@ -149,20 +150,11 @@ export class Application{
     orderConfirmation(){
             const urlId = WINDOW_URL.searchParams.get('orderId');
             if(urlId === null){
-                document.querySelector(".confirmation").textContent = "";
-                messageError(MESSAGE_ERROR_CONFIRMATION);
-                setTimeout(() => {              
-                    document.querySelector(".confirmation").textContent = "";
-                }, 2000);
-
+                new Template().messageErrorAPI(MESSAGE_ERROR_CONFIRMATION);
             } else {
                 document.querySelector("#orderId").textContent = urlId;
                 localStorage.clear("Panier");
             }
-           
-        function messageError(message){
-            document.querySelector(".confirmation").innerHTML = `<p>${message}</p>`;
-        }
     }
     
 }
@@ -299,9 +291,12 @@ export class Template{
     }
     //Afficheg d'un produit
     oneProduct(){
-            this.colors.forEach(p => {
-                document.getElementById("colors").innerHTML += `<option value='${p}'>${p}</option>`;
-            });
+        if(this.id==="error"){
+            return false;
+        }
+        this.colors.forEach(p => {
+            document.getElementById("colors").innerHTML += `<option value='${p}'>${p}</option>`;
+        });
         document.querySelector(".item__img").innerHTML = `<img src="${this.imageUrl}" alt="${this.altTxt}">`;
         document.querySelector("title").textContent = this.name;
         document.querySelector("#title").textContent = this.name;
@@ -317,29 +312,29 @@ export class Template{
     }
     //Affichage du panier
     cartProducts(ls,api,index){
-        document.querySelector("#cart__items").innerHTML+=`
+    document.querySelector("#cart__items").innerHTML+=`
         <article class="cart__item" data-id="${ls.id}" data-color="${ls.color}">
-                <div class="cart__item__img">
-                  <img src="${api.imageUrl}" alt="${api.altTxt}">
-                </div>
-                <div class="cart__item__content">
-                  <div class="cart__item__content__description">
+            <div class="cart__item__img">
+                <img src="${api.imageUrl}" alt="${api.altTxt}">
+            </div>
+            <div class="cart__item__content">
+                <div class="cart__item__content__description">
                     <h2>${api.name}</h2>
                     <p>${ls.color}</p>
                     <p>${api.price} €</p>
-                  </div>
-                  <div class="cart__item__content__settings">
+                </div>
+                <div class="cart__item__content__settings">
                     <div class="cart__item__content__settings__quantity">
-                      <p>Quantité : </p>
-                      <input type="number" class="itemQuantity" name="itemQuantity_${index}"  min="${APP_MINIMUMQUANTITY}" max="${APP_MAXIMUMQUANTITY}" value="${ls.quantity}">
+                    <p>Quantité : </p>
+                    <input type="number" class="itemQuantity" name="itemQuantity_${index}"  min="${APP_MINIMUMQUANTITY}" max="${APP_MAXIMUMQUANTITY}" value="${ls.quantity}">
                     </div>
                     <div class="cart__item__content__settings__delete">
-                      <p class="deleteItem">Supprimer</p>
+                    <p class="deleteItem">Supprimer</p>
                     </div>
-                  </div>
                 </div>
-              </articles>
-        `;
+            </div>
+        </articles>
+    `;
         document.getElementById("firstName").addEventListener("change",new Controls().controlsForm);
         document.getElementById("lastName").addEventListener("change",new Controls().controlsForm);
         document.getElementById("address").addEventListener("change",new Controls().controlsForm);
@@ -416,6 +411,16 @@ export class Template{
         //Lancement de l'affichage
          new messageTypes({type:type,message:message});
     
+    }
+    messageErrorAPI(message){
+        document.querySelector("main").innerHTML=`
+        <div class="limitedWidthBlock">
+        <div class="titles">
+          <h1>${MESSAGE_ERROR_API}</h1>
+          <h2>${message}</h2>
+        </div>
+        </div>
+        `;
     }
 }
 //------------------------------

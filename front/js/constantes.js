@@ -20,6 +20,7 @@ const MESSAGE_SUCCESS_CANORDER = "Vous pouvez commander";
 const MESSAGE_ERROR_SELECTCOLOR = "Merci de choisir une couleur.";
 const MESSAGE_ERROR_CONFIRMATION= "Un problème est survenu";
 const MESSAGE_ERROR_API = "Une erreur est survenue ";
+const MESSAGE_ERROR_PRODUCTNOTFOUND ="Produit introuvable";
 
 const MESSAGE_ALERT_MINIMUMQUANTITY = `La quantité minimum est de ${APP_MINIMUMQUANTITY} article.`;
 const MESSAGE_ALERT_MAXIMUMQUANTITY = `La quantité maximum est de ${APP_MAXIMUMQUANTITY} articles.`;
