@@ -291,9 +291,6 @@ export class Template{
     }
     //Afficheg d'un produit
     oneProduct(){
-        if(this.id==="error"){
-            return false;
-        }
         this.colors.forEach(p => {
             document.getElementById("colors").innerHTML += `<option value='${p}'>${p}</option>`;
         });
@@ -447,7 +444,7 @@ export class Controls{
     }
     //Controle de la quantité du produit seul
     quantityOneProduct(indexItem){
-            let index = indexItem.target.id;
+        let index = indexItem.target.id;
         let quantityDom = document.getElementById(`${index}`).value;
         if(quantityDom < APP_MINIMUMQUANTITY){ 
             document.getElementById(`${index}`).value=APP_MINIMUMQUANTITY; 
