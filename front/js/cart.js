@@ -9,7 +9,7 @@ class init{
     }
     init(){
         this.shop = new Application({view:"cart"});
-        this.shop.get();
+        this.shop.get_all_products();
     }
 }
 //Lancement de l'application

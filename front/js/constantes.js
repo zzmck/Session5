@@ -6,6 +6,10 @@ const API_PORT = "3000";
 
 const APP_MINIMUMQUANTITY=1;
 const APP_MAXIMUMQUANTITY=100;
+const APP_BACKEND_URL_GET_PRODUCT="api/products";
+const APP_BACKEND_URL_SEND_ORDER="api/products/order";
+const APP_FRONTEND_URL_ORDER="front/html/confirmation.html?orderId";
+
 const DOM_NUMBERACCEPTQUANTITY=`Nombre d'article(s) (${APP_MINIMUMQUANTITY}-${APP_MAXIMUMQUANTITY}) : `
 
 const MESSAGE_SUCCESS_ADDTOCART = "Produit ajouté au panier.";
@@ -15,6 +19,7 @@ const MESSAGE_SUCCESS_CANORDER = "Vous pouvez commander";
 
 const MESSAGE_ERROR_SELECTCOLOR = "Merci de choisir une couleur.";
 const MESSAGE_ERROR_CONFIRMATION= "Un problème est survenu";
+const MESSAGE_ERROR_API = "Une erreur est survenue ";
 
 const MESSAGE_ALERT_MINIMUMQUANTITY = `La quantité minimum est de ${APP_MINIMUMQUANTITY} article.`;
 const MESSAGE_ALERT_MAXIMUMQUANTITY = `La quantité maximum est de ${APP_MAXIMUMQUANTITY} articles.`;

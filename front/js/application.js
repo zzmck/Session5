@@ -15,24 +15,28 @@ export class Application{
         this.id     =     options.id;
         this.view   =     options.view;
     }
-    //Connexion API Backend
-    async connectAPI(){
-        const products = await fetch(`${API_PROTOCOL}://${API_URL}:${API_PORT}/api/products`);
+    //Connexion API Backend All products
+    async connectAPIAllProducts(){
+        const products = await fetch(`${API_PROTOCOL}://${API_URL}:${API_PORT}/${APP_BACKEND_URL_GET_PRODUCT}`);
         if (products.ok) {
             return products.json();
         }
     }
-    //Resultat BackEND => selon la page demandée lancement de l'application
-    get(){
+    //Connexion API Backend One product
+    async connectAPIOneProduct(){
+        const products = await fetch(`${API_PROTOCOL}://${API_URL}:${API_PORT}/${APP_BACKEND_URL_GET_PRODUCT}/${this.id}`);
+        if (products.ok) {
+             return products.json();
+        }
+    }
+    //Resultat oneProduct BackEND => selon la page demandée lancement de l'application
+    get_all_products(){
         var Api = this;
-            this.connectAPI()
+            this.connectAPIAllProducts()
             .then(function(result){
                 Api.tableProducts=result;
                 if(Api.view === "all"){
                     Api.showAllProducts(Api.tableProducts);
-                } else if(Api.view === "oneId"){
-                    var resultOne = result.find(item=>(item._id===Api.id))
-                    Api.showOneProduct(resultOne);
                 } else if(Api.view === "cart"){
                     Api.showCart();
                 } else if(Api.view === "confirmation"){
@@ -40,10 +44,23 @@ export class Application{
                 }
             })
             .catch(function(error) {
-                console.log("Marche pas ton api mec; " + error);
+                new Template().showMessages("error",MESSAGE_ERROR_API+" : " + error);
             
             })
         
+    }
+    //Resultat allProducts BackEND => selon la page demandée lancement de l'application
+    get_one_product(){
+     var Api = this;
+    this.connectAPIOneProduct()
+        .then(function(result){
+            if(Api.view === "oneId"){
+                Api.showOneProduct(result);
+            }
+        })
+        .catch(function(error) {
+            new Template().showMessages("error",MESSAGE_ERROR_API+" : " + error);
+        })
     }
     //Application Tous les produits
     showAllProducts(input){
@@ -109,7 +126,7 @@ export class Application{
             contact:contactforBack,
             products:productsIdOrder
         }
-        fetch(`${API_PROTOCOL}://${API_URL}:${API_PORT}/api/products/order`, {
+        fetch(`${API_PROTOCOL}://${API_URL}:${API_PORT}/${APP_BACKEND_URL_SEND_ORDER}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -122,10 +139,10 @@ export class Application{
                     }
                 })
             .then(function (data) {
-                location.href = `/front/html/confirmation.html?orderId=${data.orderId}`;
+                location.href = `/${APP_FRONTEND_URL_ORDER}=${data.orderId}`;
               })
-            .catch(function (err) {
-              console.log(err);
+            .catch(function (error) {
+                new Template().showMessages("error",MESSAGE_ERROR_API+" : " + error);
             });
    
     }
@@ -208,7 +225,7 @@ export class Cart{
         localStorage.setItem('panier',JSON.stringify(newCart));
         new Template().showMessages("success",MESSAGE_SUCCESS_DELETEFORMCART);
         document.querySelector("#cart__items").innerHTML="";
-        new Application({view:"cart"}).get();
+        new Application({view:"cart"}).get_all_products();
 
     }
     //Changer la quantité d'un produit dans le LocalStorage
@@ -232,7 +249,7 @@ export class Cart{
     totalCartPrice(){
         let price = this;
         let total = 0;
-        new Application().connectAPI().then(function(result){
+        new Application().connectAPIAllProducts().then(function(result){
             for(let product of price.cartLs){
                 let priceOfProduct = result.find(d=>d._id===product.id);
                 total+=product.quantity * priceOfProduct.price

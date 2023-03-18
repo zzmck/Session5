@@ -13,7 +13,7 @@ class init{
     }
     init(){
         this.shop = new Application({id:`${urlProductId}`,view:"oneId"});
-        this.shop.get();
+        this.shop.get_one_product();
     }
 }
 //Lancement de l'application
