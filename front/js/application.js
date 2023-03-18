@@ -131,7 +131,7 @@ export class Application{
     }
     //Application confirmation de commande
     orderConfirmation(){
-            const urlId = url.searchParams.get('orderId');
+            const urlId = WINDOW_URL.searchParams.get('orderId');
             if(urlId === null){
                 document.querySelector(".confirmation").textContent = "";
                 messageError(MESSAGE_ERROR_CONFIRMATION);
