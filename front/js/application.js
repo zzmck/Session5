@@ -1,5 +1,4 @@
-const url = new URL(window.location.href);
-const urlProductId = url.searchParams.get('id');
+const urlProductId =WINDOW_URL.searchParams.get('id');
 //---------------------------------------------------
 //Class Application Client <=> Backend, Client <=> Ls
 //---------------------------------------------------
@@ -18,7 +17,7 @@ export class Application{
     }
     //Connexion API Backend
     async connectAPI(){
-        const products = await fetch(`http://127.0.0.1:3000/api/products`);
+        const products = await fetch(`${API_PROTOCOL}://${API_URL}:${API_PORT}/api/products`);
         if (products.ok) {
             return products.json();
         }
@@ -62,10 +61,10 @@ export class Application{
         let lsProducts = new Cart();
         let i=0;
         if(JSON.parse(localStorage.getItem("panier")).length===0){
-            document.querySelector(".cart").innerHTML = "<div id='empty'>Votre panier est vide</div>";
+            document.querySelector(".cart").innerHTML = `<div id='empty'>${MESSAGE_ALERT_CARTEMPTY}</div>`;
             document.querySelector("#empty").setAttribute("align","center");
         } else {
-            document.querySelector("#cart__items").innerHTML += new Template().domMessages();
+            document.querySelector("main").innerHTML += new Template().domMessages();
             lsProducts.cartLs.forEach(function(element, index){
                 let sameProduct = tableProduct.find(p=>(p._id===element.id));
                 new Template().cartProducts(element,sameProduct,index);
@@ -83,14 +82,14 @@ export class Application{
     //Aplication Ajout au panier
     addTocart(){
         if(!new Controls().color("colors")){
-            new Template().showMessagesError("Merci de choisir une couleur.");
+            new Template().showMessages("error",MESSAGE_ERROR_SELECTCOLOR);
             return false;
         }
         let selectedQuantity = document.getElementById("quantity").value;
         let selectedColor = document.getElementById("colors").value;
          
         new Cart().add({id:urlProductId, color:selectedColor, quantity:selectedQuantity});
-        new Template().showMessagesSuccess("Produit ajouté au panier.");
+        new Template().showMessages("success",MESSAGE_SUCCESS_ADDTOCART);
     }
     //application Envoi du formulaire de commande
     sendForm(){
@@ -110,7 +109,7 @@ export class Application{
             contact:contactforBack,
             products:productsIdOrder
         }
-        fetch('http://127.0.0.1:3000/api/products/order', {
+        fetch(`${API_PROTOCOL}://${API_URL}:${API_PORT}/api/products/order`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -135,7 +134,7 @@ export class Application{
             const urlId = url.searchParams.get('orderId');
             if(urlId === null){
                 document.querySelector(".confirmation").textContent = "";
-                messageError("un problème est survenue");
+                messageError(MESSAGE_ERROR_CONFIRMATION);
                 setTimeout(() => {              
                     document.querySelector(".confirmation").textContent = "";
                 }, 2000);
@@ -155,14 +154,7 @@ export class Application{
 //Class fonctionnement du panier
 //------------------------------
 export class Cart{
-    constructor(options){
-        var defaultOptions = {
-            index:''
-        }
-        var options = Object.assign(defaultOptions,options);
-
-        this.index = options.index;
-        
+    constructor(){
         let cartLs = localStorage.getItem('panier');
         if(cartLs === null){
             this.cartLs = [];
@@ -202,9 +194,9 @@ export class Cart{
     }
     //Supprimer un produit du localStorage
     remove(){
-        let article = this.parentNode.parentNode.parentNode.parentNode;
-        let idProduct = article.dataset['id'];
-        let colorProduct = article.dataset['color'];
+        let articleRemoved = this.parentNode.parentNode.parentNode.parentNode;
+        let idProduct = articleRemoved.dataset['id'];
+        let colorProduct = articleRemoved.dataset['color'];
         let oldCart = JSON.parse(localStorage.getItem('panier'));
         let newCart = [];
         for(let i=0;i<oldCart.length;i++){
@@ -214,6 +206,7 @@ export class Cart{
         } 
         localStorage.removeItem('panier');
         localStorage.setItem('panier',JSON.stringify(newCart));
+        new Template().showMessages("success",MESSAGE_SUCCESS_DELETEFORMCART);
         document.querySelector("#cart__items").innerHTML="";
         new Application({view:"cart"}).get();
 
@@ -299,7 +292,11 @@ export class Template{
         document.querySelector("#price").textContent = this.price;
         document.querySelector("#description").textContent = this.description;
         document.querySelector("article").innerHTML+=this.domMessages();
-        document.querySelector("#quantity").addEventListener('change',new Controls().quantity);
+        document.querySelector("#quantity").setAttribute("min",APP_MINIMUMQUANTITY);
+        document.querySelector("#quantity").setAttribute("max",APP_MAXIMUMQUANTITY);
+        document.querySelector("#quantity").setAttribute("value",APP_MINIMUMQUANTITY);
+        document.querySelector(".item__content__settings__quantity").firstElementChild.textContent=DOM_NUMBERACCEPTQUANTITY;
+        document.querySelector("#quantity").addEventListener('change',new Controls().quantityOneProduct);
         document.querySelector("#addToCart").addEventListener("click",new Application().addTocart);
     }
     //Affichage du panier
@@ -318,7 +315,7 @@ export class Template{
                   <div class="cart__item__content__settings">
                     <div class="cart__item__content__settings__quantity">
                       <p>Quantité : </p>
-                      <input type="number" class="itemQuantity" name="itemQuantity_${index}"  min="1" max="100" value="${ls.quantity}">
+                      <input type="number" class="itemQuantity" name="itemQuantity_${index}"  min="${APP_MINIMUMQUANTITY}" max="${APP_MAXIMUMQUANTITY}" value="${ls.quantity}">
                     </div>
                     <div class="cart__item__content__settings__delete">
                       <p class="deleteItem">Supprimer</p>
@@ -348,32 +345,61 @@ export class Template{
             <span id='messageError' class='message'></span>
         </div>`;
     }
-    showMessagesError(message){
-        setTimeout(this.hideMessagesError,1400);
-        document.querySelector("#containerMessagesError").setAttribute("class",`divMessageAlerts error`);
-        document.querySelector("#messageError").textContent=message;
-    }
-    showMessagesAlert(message){
-        setTimeout(this.hideMessagesAlert,1400);
-        document.querySelector("#containerMessagesAlert").setAttribute("class",`divMessageAlerts alert`);
-        document.querySelector("#messageAlert").textContent=message;
-    }
-    showMessagesSuccess(message){
-        setTimeout(this.hideMessagesSuccess,2900);
-        document.querySelector("#containerMessagesSuccess").setAttribute("class",`divMessage success`);
-        document.querySelector("#messageSuccess").textContent=message;
-    }
-    hideMessagesError(){
-        document.querySelector("#containerMessagesError").setAttribute("class","divHidden");
-        document.querySelector("#messageError").textContent="";
-    }
-    hideMessagesAlert(){
-        document.querySelector("#containerMessagesAlert").setAttribute("class","divHidden");
-        document.querySelector("#messageAlert").textContent="";
-    }
-    hideMessagesSuccess(){
-        document.querySelector("#containerMessagesSuccess").setAttribute("class","divHidden");
-        document.querySelector("#messageSuccess").textContent="";
+    //Affichage des messages d'erreurs / Alert / Success
+    showMessages(type,message){
+        //Class de gestion des messages 
+        class messageTypes{
+            constructor(options){
+                this.type = options.type;
+                this.message = options.message;
+                let container;
+                let containerMessage;
+                let classMessage;
+                switch(this.type){
+                    case "success":
+                        container = "#containerMessagesSuccess";
+                        containerMessage = "#messageSuccess";
+                        classMessage = "divMessage success";
+                        setTimeout(this.hideMessagesSuccess,2000);
+                    break;
+                    case "alert":
+                        container = "#containerMessagesAlert";
+                        containerMessage = "#messageAlert";
+                        classMessage = "divMessageAlerts alert";
+                        setTimeout(this.hideMessagesAlert,2000);
+                    break;
+                    case "error":
+                        container = "#containerMessagesError";
+                        containerMessage = "#messageError";
+                        classMessage = "divMessageAlerts error";
+                        setTimeout(this.hideMessagesError,2000);
+                    break;
+                    default:
+                    break;
+                }
+                document.querySelector(`${container}`).setAttribute("class",`${classMessage}`);
+                document.querySelector(`${containerMessage}`).textContent=this.message;
+
+            }
+            //Masquer les messages success
+            hideMessagesSuccess(){
+                document.querySelector("#containerMessagesSuccess").setAttribute("class","divHidden");
+                document.querySelector("#messageSuccess").textContent="";
+            }
+            //Masquer les messages error
+            hideMessagesError(){
+                document.querySelector("#containerMessagesError").setAttribute("class","divHidden");
+                document.querySelector("#messageError").textContent="";
+            }
+            //Masquer les messages alert
+            hideMessagesAlert(){
+                document.querySelector("#containerMessagesAlert").setAttribute("class","divHidden");
+                document.querySelector("#messageAlert").textContent="";
+            }
+        }
+        //Lancement de l'affichage
+         new messageTypes({type:type,message:message});
+    
     }
 }
 //------------------------------
@@ -385,30 +411,30 @@ export class Controls{
         let resultIndex=indexItem.target.attributes.name.nodeValue;
         let index = resultIndex.replace("itemQuantity_","");
         let quantityDom = document.querySelectorAll("input.itemQuantity")[`${index}`].value;
-    if(quantityDom < 1){ 
-        document.querySelectorAll("input.itemQuantity")[`${index}`].value=1; 
-        new Template().showMessagesAlert("La quantité minimum est de 1 article.");
-        quantityDom=1;
+    if(quantityDom < APP_MINIMUMQUANTITY){ 
+        document.querySelectorAll("input.itemQuantity")[`${index}`].value=APP_MINIMUMQUANTITY; 
+        new Template().showMessages("alert",MESSAGE_ALERT_MINIMUMQUANTITY);
+        quantityDom=APP_MINIMUMQUANTITY;
     }
-    if(quantityDom > 100){ 
-        document.querySelectorAll("input.itemQuantity")[`${index}`].value=100;
-        new Template().showMessagesAlert("La quantité maximum est de 100 articles.");
-        quantityDom=100;
+    if(quantityDom > APP_MAXIMUMQUANTITY){ 
+        document.querySelectorAll("input.itemQuantity")[`${index}`].value=APP_MAXIMUMQUANTITY;
+        new Template().showMessages("alert",MESSAGE_ALERT_MAXIMUMQUANTITY);
+        quantityDom=APP_MAXIMUMQUANTITY;
     }
     new Cart().changeQuantity(quantityDom,index);
-    new Template().showMessagesSuccess("La nouvelle quantitée du produit à été modifiée à "+quantityDom+".");
+    new Template().showMessages("success",MESSAGE_SUCCESS_NEWQUANTITY+ " "+quantityDom+".");
     }
     //Controle de la quantité du produit seul
-    quantity(indexItem){
+    quantityOneProduct(indexItem){
             let index = indexItem.target.id;
         let quantityDom = document.getElementById(`${index}`).value;
-        if(quantityDom < 1){ 
-            document.getElementById(`${index}`).value=1; 
-            new Template().showMessagesAlert("La quantité minimum est de 1 article.");
+        if(quantityDom < APP_MINIMUMQUANTITY){ 
+            document.getElementById(`${index}`).value=APP_MINIMUMQUANTITY; 
+            new Template().showMessages("alert",MESSAGE_ALERT_MINIMUMQUANTITY);
         }
-        if(quantityDom > 100){ 
-            document.getElementById(`${index}`).value=100;
-            new Template().showMessagesAlert("La quantité maximum est de 100 articles.");
+        if(quantityDom > APP_MAXIMUMQUANTITY){ 
+            document.getElementById(`${index}`).value=APP_MAXIMUMQUANTITY;
+            new Template().showMessages("alert",MESSAGE_ALERT_MAXIMUMQUANTITY);
         }
     }
     //Controle de la séléction d'une couleur
@@ -454,7 +480,7 @@ export class Controls{
                 if (form("email",valueEmail)) {email = true;} else {email = false;}
 
                 if(firstname&&lastname&address&city&email){
-                    new Template().showMessagesSuccess("Vous pouvez commander");
+                    new Template().showMessages("success",MESSAGE_SUCCESS_CANORDER);
                     document.getElementById("order").style.display="block";
                 }
                 else{
@@ -474,16 +500,16 @@ export class Controls{
                 errorFormMsg(inputName,"","");
                 return false; }        
             else if (inputName != "address" && inputName!="email" && inputValue.match(/[0-9]/i)){
-                errorFormMsg(inputName,"orange","pas de nombre");
+                errorFormMsg(inputName,"orange",MESSAGE_FORM_NONUMBER);
                 return false;
             } else if (inputName != "address" && inputName != "email" && inputValue.match(/[ýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._\s\.\,\\\@\!\\[\]\&\(\)\|\_\/\%\^\*+\°\§\€\&\"\`\=\+\¤\¨:]/)){
-                errorFormMsg(inputName,"orange","pas de caracteres speciaux");
+                errorFormMsg(inputName,"orange",MESSAGE_FORM_CARACTERE);
                 return false;
             }
             else if(inputName === "email" && (!inputValue.match(/^(([^<>()[]\.,;:s@]+(.[^<>()[]\.,;:s@]+)*)|(.+))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/) || inputValue.match(" "))){
-                errorFormMsg(inputName,"orange","mails sous forme xxx@xx.xx");
+                errorFormMsg(inputName,"orange",MESSAGE_FORM_EMAIL);
             } else {
-                errorFormMsg(inputName,"green","bien rempli");
+                errorFormMsg(inputName,"green",MESSAGE_FORM_GOODINPUT);
                 return true;
             }
         }

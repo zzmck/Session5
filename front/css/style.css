@@ -267,13 +267,13 @@ footer .footerSecondary {
 	background-color: green;
 }
 .alert{
-	animation-duration: 1.5s;
+	animation-duration: 3s;
 	animation-name: test;
 	animation-iteration-count: 1;
 	background-color: orange;
 }
 .error{
-	animation-duration: 1.5s;
+	animation-duration: 3s;
 	animation-name: test;
 	animation-iteration-count: 1;
 	background-color: red;
