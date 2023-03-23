@@ -73,90 +73,121 @@ export class Application{
         new Template(input).oneProduct();
     }
     //Application Panier
-    showCart(){
-        let tableProduct = this.tableProducts;
-        let lsProducts = new Cart();
-        let i=0;
-        if(JSON.parse(localStorage.getItem("panier")).length===0){
-            document.querySelector(".cart").innerHTML = `<div id='empty'>${MESSAGE_ALERT_CARTEMPTY}</div>`;
-            document.querySelector("#empty").setAttribute("align","center");
-        } else {
-            document.querySelector("main").innerHTML += new Template().domMessages();
-            lsProducts.cartLs.forEach(function(element, index){
-                let sameProduct = tableProduct.find(p=>(p._id===element.id));
-                new Template().cartProducts(element,sameProduct,index);
-            });
-            for(let i=0;i<lsProducts.cartLs.length;i++){
-                document.querySelectorAll("p.deleteItem")[i].addEventListener("click",new Cart().remove);
-                document.querySelectorAll("input.itemQuantity")[i].addEventListener('change',new Controls().quantityCart);
-            }
-            
-            document.getElementById("order").style.display='none';
-            new Cart().totalNumberProduct();
-            new Cart().totalCartPrice();
-        }
+    showCart() {    
+    const cart = new Cart();
+    const template = new Template();
+    const controls = new Controls();
+    const tableProducts = this.tableProducts;
+  
+    if (cart.cartLs.length === 0) {
+      document.querySelector(".cart").innerHTML = `<div id='empty'>${MESSAGE_ALERT_CARTEMPTY}</div>`;
+      document.querySelector("#empty").setAttribute("align", "center");
+      return;
+    }
+  
+    document.querySelector("main").innerHTML += template.domMessages();
+  
+    cart.cartLs.forEach(function (element, index) {
+      const sameProduct = tableProducts.find((p) => p._id === element.id);
+      template.cartProducts(element, sameProduct, index);
+    });
+  
+    const deleteItems = document.querySelectorAll("p.deleteItem");
+    deleteItems.forEach((item) => item.addEventListener("click", cart.remove));
+  
+    const quantityInputs = document.querySelectorAll("input.itemQuantity");
+    quantityInputs.forEach((input) => input.addEventListener('change', controls.quantityCart));
+  
+  
+    cart.totalNumberProduct();
+    cart.totalCartPrice();
+
+    let firstName = document.getElementById("firstName");
+    let lastName = document.getElementById("lastName");
+    let email = document.getElementById("email");
+    let address = document.getElementById("address");
+    let city = document.getElementById("city");
+
+        firstName.addEventListener("blur", () => {
+            new controlInputs().validateInput(firstName);
+        });
+        lastName.addEventListener("blur", () => {
+            new controlInputs().validateInput(lastName);
+        });
+        email.addEventListener("blur", () => {
+            new controlInputs().validateInput(email);
+        });
+        address.addEventListener("blur", () => {
+            new controlInputs().validateInput(address);
+        });
+        city.addEventListener("blur", () => {
+            new controlInputs().validateInput(city);
+        });
+        document.getElementById("order").addEventListener("click", (e)=>{new controlInputs().validateForm(e)});
+
     }
     //Application Ajout au panier
-    addTocart(){
-        if(!new Controls().color("colors")){
-            new Template().showMessages("error",MESSAGE_ERROR_SELECTCOLOR);
-            return false;
+    addTocart() {
+        const selectedColor = document.getElementById("colors").value;
+        const selectedQuantity = document.getElementById("quantity").value;
+        const urlProductId = WINDOW_URL.searchParams.get('id');
+      
+        if (!new Controls().color("colors")) {
+          new Template().showMessages("error", MESSAGE_ERROR_SELECTCOLOR);
+          return;
         }
-        let selectedQuantity = document.getElementById("quantity").value;
-        let selectedColor = document.getElementById("colors").value;
-        let urlProductId =WINDOW_URL.searchParams.get('id');
-        new Cart().add({id:urlProductId, color:selectedColor, quantity:selectedQuantity});
-        new Template().showMessages("success",MESSAGE_SUCCESS_ADDTOCART);
-    }
+      
+        new Cart().add({ id: urlProductId, color: selectedColor, quantity: selectedQuantity });
+        new Template().showMessages("success", MESSAGE_SUCCESS_ADDTOCART);
+      }
     //Application Envoi du formulaire de commande
-    sendForm(){
-        let productsIdOrder=[];
-        let productsLs=JSON.parse(localStorage.getItem("panier"));     
-        for(let x=0;x<productsLs.length;x++){
-            productsIdOrder.push(productsLs[x].id);
-            }   
-        let contactforBack = {
-            firstName: document.getElementById("firstName").value,
-            lastName: document.getElementById("lastName").value,
-            address: document.getElementById("address").value,
-            city: document.getElementById("city").value,
-            email: document.getElementById("email").value
+    sendForm() {
+        let productsIdOrder = [];
+        let productsLs = JSON.parse(localStorage.getItem("panier"));
+        for (let x = 0; x < productsLs.length; x++) {
+          productsIdOrder.push(productsLs[x].id);
         }
+        let contactForBack = {
+          firstName: document.getElementById("firstName").value.trim(),
+          lastName: document.getElementById("lastName").value.trim(),
+          address: document.getElementById("address").value.trim(),
+          city: document.getElementById("city").value.trim(),
+          email: document.getElementById("email").value.trim()
+        };
         let backOrder = {
-            contact:contactforBack,
-            products:productsIdOrder
-        }
+          contact: contactForBack,
+          products: productsIdOrder
+        };
         fetch(`${API_PROTOCOL}://${API_URL}:${API_PORT}/${APP_BACKEND_URL_SEND_ORDER}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(backOrder),
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(backOrder)
+        })
+          .then(function (response) {
+            if (response.ok) {
+              return response.json();
+            }
           })
-            .then(function (response) {
-                    if (response.ok) {
-                        return response.json();
-                    }
-                })
-            .then(function (data) {
-                location.href = `/${APP_FRONTEND_URL_ORDER}=${data.orderId}`;
-              })
-            .catch(function (error) {
-                new Template().showMessages("error",MESSAGE_ERROR_API+" : " + error);
-            });
-   
-    }
+          .then(function (data) {
+            location.href = `/${APP_FRONTEND_URL_ORDER}=${data.orderId}`;
+          })
+          .catch(function (error) {
+            new Template().showMessages("error", MESSAGE_ERROR_API + " : " + error);
+          });
+      }
     //Application confirmation de commande
     orderConfirmation(){
-            const urlId = WINDOW_URL.searchParams.get('orderId');
-            if(urlId === null){
-                new Template().messageErrorAPI(MESSAGE_ERROR_CONFIRMATION);
-            } else {
-                document.querySelector("#orderId").textContent = urlId;
-                localStorage.clear("Panier");
-            }
+        const urlId = WINDOW_URL.searchParams.get('orderId');
+        if(urlId === null){
+            new Template().showMessages("error",MESSAGE_ERROR_CONFIRMATION);
+        } else {
+            document.querySelector("#orderId").textContent = urlId;
+            localStorage.removeItem("panier");
+        }
     }
-    
+
 }
 //------------------------------
 //Class fonctionnement du panier
@@ -177,30 +208,20 @@ class Cart{
     }
     //Ajout de produit au localStorage
     add(product){
-        let foundProduct = this.cartLs.find(p=> (p.id === product.id && p.color === product.color));
-        if(foundProduct!=undefined){
-            foundProduct.quantity=product.quantity;
+        let foundProduct = this.cartLs.find(p => p.id === product.id && p.color === product.color);
+        if(foundProduct !== undefined){
+            foundProduct.quantity = product.quantity;
         } else {
-            if(this.cartLs.length===0){
-                this.cartLs.push(product);
-            } else if (foundProduct = this.cartLs.find(p=> (p.id === product.id))) {
-                let newCart = this.cartLs;
-                for(let i=0;i<newCart.length;++i){
-                    if(newCart[i].id===product.id){
-                        newCart.splice(i,0,product);
-                        break;
-                    }
-                }
-                localStorage.removeItem('panier');
-                localStorage.setItem('panier',JSON.stringify(newCart));
+            let sameProduct = this.cartLs.find(p => p.id === product.id);
+            if (sameProduct !== undefined) {
+                let index = this.cartLs.indexOf(sameProduct);
+                this.cartLs.splice(index+1, 0, product);
             } else {
                 this.cartLs.push(product);
             }
-            
         }
         this.save();
     }
-    //Supprimer un produit du localStorage
     remove(){
         let articleRemoved = this.parentNode.parentNode.parentNode.parentNode;
         let idProduct = articleRemoved.dataset['id'];
@@ -255,7 +276,7 @@ class Cart{
 //Class utile aux affichages DOM
 //------------------------------
 class Template{
-    constructor(options){
+    constructor(product){
         var defaultOptions = {
             _id         :   "id error",
             colors      :   [],
@@ -266,16 +287,16 @@ class Template{
             description :   "description error",
             quantity : "quantity error"
         }
-        var options = Object.assign(defaultOptions,options);
+        var product = Object.assign(defaultOptions,product);
 
-        this.colors =   options.colors;
-        this._id     =   options._id;
-        this.imageUrl =   options.imageUrl;
-        this.altTxt =   options.altTxt;
-        this.name   =   options.name;
-        this.price  =   options.price;
-        this.description    =   options.description;
-        this.quantity   =   options.quantity;
+        this.colors =   product.colors;
+        this._id     =   product._id;
+        this.imageUrl =   product.imageUrl;
+        this.altTxt =   product.altTxt;
+        this.name   =   product.name;
+        this.price  =   product.price;
+        this.description    =   product.description;
+        this.quantity   =   product.quantity;
 
     }
     //Affichage de tous les produits
@@ -331,14 +352,7 @@ class Template{
                 </div>
             </div>
         </articles>
-    `;
-        document.getElementById("firstName").addEventListener("change",new Controls().controlsForm);
-        document.getElementById("lastName").addEventListener("change",new Controls().controlsForm);
-        document.getElementById("address").addEventListener("change",new Controls().controlsForm);
-        document.getElementById("city").addEventListener("change",new Controls().controlsForm);
-        document.getElementById("email").addEventListener("change",new Controls().controlsForm);
-        document.getElementById("order").addEventListener("click",new Application().sendForm);
-        
+    `;  
     }
     //Affichage des messages d'erreurs / d'alerte et succès
     domMessages(){
@@ -428,19 +442,20 @@ class Controls{
     quantityCart(indexItem){
         let resultIndex=indexItem.target.attributes.name.nodeValue;
         let index = resultIndex.replace("itemQuantity_","");
-        let quantityDom = document.querySelectorAll("input.itemQuantity")[`${index}`].value;
-    if(quantityDom < APP_MINIMUMQUANTITY){ 
-        document.querySelectorAll("input.itemQuantity")[`${index}`].value=APP_MINIMUMQUANTITY; 
-        new Template().showMessages("alert",MESSAGE_ALERT_MINIMUMQUANTITY);
-        quantityDom=APP_MINIMUMQUANTITY;
-    }
-    if(quantityDom > APP_MAXIMUMQUANTITY){ 
-        document.querySelectorAll("input.itemQuantity")[`${index}`].value=APP_MAXIMUMQUANTITY;
-        new Template().showMessages("alert",MESSAGE_ALERT_MAXIMUMQUANTITY);
-        quantityDom=APP_MAXIMUMQUANTITY;
-    }
-    new Cart().changeQuantity(quantityDom,index);
-    new Template().showMessages("success",MESSAGE_SUCCESS_NEWQUANTITY+ " "+quantityDom+".");
+        let quantityDom = parseInt(document.querySelectorAll("input.itemQuantity")[index].value);
+        
+        if(quantityDom < APP_MINIMUMQUANTITY){ 
+            document.querySelectorAll("input.itemQuantity")[index].value=APP_MINIMUMQUANTITY; 
+            new Template().showMessages("alert",MESSAGE_ALERT_MINIMUMQUANTITY);
+            quantityDom=APP_MINIMUMQUANTITY;
+        }
+        if(quantityDom > APP_MAXIMUMQUANTITY){ 
+            document.querySelectorAll("input.itemQuantity")[index].value=APP_MAXIMUMQUANTITY;
+            new Template().showMessages("alert",MESSAGE_ALERT_MAXIMUMQUANTITY);
+            quantityDom=APP_MAXIMUMQUANTITY;
+        }
+        new Cart().changeQuantity(quantityDom,index);
+        new Template().showMessages("success",MESSAGE_SUCCESS_NEWQUANTITY+ " "+quantityDom+".");
     }
     //Controle de la quantité du produit seul
     quantityOneProduct(indexItem){
@@ -464,74 +479,65 @@ class Controls{
     }
     //controle de la présence d'un produit dans le panier
     productIsInCart(productId){
-        let products = new Cart.filter(function (element) {
+        let products = new Cart().cartLs.filter(function (element) {
           return (
             element.id === productId
           );
         });
-        if(products.length > 0 ) return products[0];
-        else return null;
+        if(products.length > 0 ) {
+          return products[0];
+        } else {
+          return null;
+        }
     }
-    //controle des champs du formulaire de commande
-    controlsForm(){
-        //---------------------------------------------------
-        //Création d'une class de controle pour le formulaire
-        //---------------------------------------------------
-        class controlInputs {
-            constructor() {
-                let firstname;
-                let lastname;
-                let address;
-                let city;
-                let email;
-
-                let valueFirstName = document.getElementById("firstName").value;
-                let valueLastName = document.getElementById("lastName").value;
-                let valueAddress = document.getElementById("address").value;
-                let valueCity = document.getElementById("city").value;
-                let valueEmail = document.getElementById("email").value
-                
-                if (form("firstName", valueFirstName)) {firstname = true;} else {firstname = false;}
-                if (form("lastName", valueLastName)) {lastname = true;} else {lastname = false;}
-                if (form("address", valueAddress)) {address = true;} else {address = false;}
-                if (form("city", valueCity)) {city = true;} else {city = false;}
-                if (form("email",valueEmail)) {email = true;} else {email = false;}
-
-                if(firstname&&lastname&address&city&email){
-                    new Template().showMessages("success",MESSAGE_SUCCESS_CANORDER);
-                    document.getElementById("order").style.display="block";
-                }
-                else{
-                    document.getElementById("order").style.display="none";
-                }
-            }
-        }
-        //Mise en forme des messages sous les champs
-        function errorFormMsg(inputName,errorColor,message){
-            document.getElementById(inputName + "ErrorMsg").textContent = message;    
-            document.getElementById(inputName).style.border=`3px solid ${errorColor}`;
-            document.getElementById(inputName + "ErrorMsg").style.color = errorColor;
-        }
-        //Controle des formats d'entrée dans les champs formulaire
-        function form(inputName, inputValue){
-            if(inputValue.length===0){ 
-                errorFormMsg(inputName,"","");
-                return false; }        
-            else if (inputName != "address" && inputName!="email" && inputValue.match(/[0-9]/i)){
-                errorFormMsg(inputName,"orange",MESSAGE_FORM_NONUMBER);
-                return false;
-            } else if (inputName != "address" && inputName != "email" && inputValue.match(/[ýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._\s\.\,\\\@\!\\[\]\&\(\)\|\_\/\%\^\*+\°\§\€\&\"\`\=\+\¤\¨:]/)){
-                errorFormMsg(inputName,"orange",MESSAGE_FORM_CARACTERE);
-                return false;
-            }
-            else if(inputName === "email" && (!inputValue.match(/^(([^<>()[]\.,;:s@]+(.[^<>()[]\.,;:s@]+)*)|(.+))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/) || inputValue.match(" "))){
-                errorFormMsg(inputName,"orange",MESSAGE_FORM_EMAIL);
-            } else {
-                errorFormMsg(inputName,"green",MESSAGE_FORM_GOODINPUT);
-                return true;
-            }
-        }
-        new controlInputs();
+}
+class controlInputs {
+    constructor() {
+        this.form=document.querySelector("form");
     }
-    
+    //Formulaire : controle individuel des champs
+    validateInput(input) {
+        const inputValue = input.value.trim();
+        const inputName = input.getAttribute("name");
+
+        if (inputValue.length === 0) {
+            this.errorFormMsg(inputName, "red", MESSAGE_FORM_EMPTY);
+            return false;
+        } else if (inputName !== "address" && inputName !== "email" && inputValue.match(/[0-9]/i)) {
+            this.errorFormMsg(inputName, "orange", MESSAGE_FORM_NONUMBER);
+            return false;
+        } else if (inputName !== "address" && inputName !== "email" && inputValue.match(/[ýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._\s\.\,\\\@\!\\[\]\&\(\)\|\_\/\%\^\*+\°\§\€\&\"\`\=\+\¤\¨:]/)) {
+            this.errorFormMsg(inputName, "orange", MESSAGE_FORM_CARACTERE);
+            return false;
+        } else if (inputName === "email" && (!inputValue.match(/^(([^<>()[]\.,;:s@]+(.[^<>()[]\.,;:s@]+)*)|(.+))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/) || inputValue.match(" "))){
+            this.errorFormMsg(inputName, "orange", MESSAGE_FORM_EMAIL);
+            return false;
+        } else {
+            this.errorFormMsg(inputName, "green", MESSAGE_FORM_GOODINPUT);
+            return true;
+        }
+    }
+    //Formulaire : validation du formulaire avant envoi de commande
+    validateForm(e) {
+        e.preventDefault();
+        const inputs = document.querySelectorAll("input[type=text],input[type=email]");
+        let formIsValid = true;
+
+        inputs.forEach(input => {
+            const isValid = this.validateInput(input);
+            if (!isValid) {
+                formIsValid = false;
+            }
+        });
+
+        if (formIsValid) {
+            new Application().sendForm();
+        }
+    }
+    //Mise en forme des messages sous les champs
+    errorFormMsg(inputName,errorColor,message){
+        document.getElementById(inputName + "ErrorMsg").textContent = message;    
+        document.getElementById(inputName).style.border=`3px solid ${errorColor}`;
+        document.getElementById(inputName + "ErrorMsg").style.color = errorColor;
+    }
 }

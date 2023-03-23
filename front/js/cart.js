@@ -3,15 +3,14 @@ import {Application} from './application.js';
 //----------------------
 //Class d'initialisation
 //----------------------
-class init{
+class Init{
     constructor(){
         this.shop = null;
     }
-    init(){
+    launch(){
         this.shop = new Application({view:"cart"});
         this.shop.get_all_products();
     }
 }
 //Lancement de l'application
-var app = new init();
-app.init();
+new Init().launch();

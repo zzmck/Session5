@@ -7,15 +7,14 @@ const urlProductId = url.searchParams.get('id');
 //----------------------
 //Class d'initialisation
 //----------------------
-class init{
+class Init{
     constructor(){
         this.shop = null;
     }
-    init(){
+    launch(){
         this.shop = new Application({id:`${urlProductId}`,view:"oneId"});
         this.shop.get_one_product();
     }
 }
 //Lancement de l'application
-var app = new init();
-app.init();
+new Init().launch();
