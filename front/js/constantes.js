@@ -28,6 +28,6 @@ const MESSAGE_ALERT_CARTEMPTY = "Votre panier est vide";
 
 const MESSAGE_FORM_NONUMBER = "Aucun nombre n'est accepté.";
 const MESSAGE_FORM_CARACTERE = "Aucun caractère spécial n'est accepté";
-const MESSAGE_FORM_EMAIL = "L'email doit être sous la forme : mail@provider.ext sans espace.";
+const MESSAGE_FORM_EMAIL = "L'email doit être sous la forme : mail@provider.ext, sans espace.";
+const MESSAGE_FORM_EMPTY = "Le champ ne doit pas être vide.";
 const MESSAGE_FORM_GOODINPUT = "Complet";
-const MESSAGE_FORM_EMPTY = "Le champ doit etre rempli.";

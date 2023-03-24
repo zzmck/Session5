@@ -62,7 +62,7 @@ export class Application{
             new Template().messageErrorAPI(error);
         })
     }
-    //Application Tous les produits
+    //Application tous les produits
     showAllProducts(input){
         input.forEach(element => {
             document.querySelector("#items").innerHTML += new Template(element).allProducts();
@@ -109,21 +109,21 @@ export class Application{
     let city = document.getElementById("city");
 
         firstName.addEventListener("blur", () => {
-            new controlInputs().validateInput(firstName);
+            new ControlInputs().validateInput(firstName);
         });
         lastName.addEventListener("blur", () => {
-            new controlInputs().validateInput(lastName);
+            new ControlInputs().validateInput(lastName);
         });
         email.addEventListener("blur", () => {
-            new controlInputs().validateInput(email);
+            new ControlInputs().validateInput(email);
         });
         address.addEventListener("blur", () => {
-            new controlInputs().validateInput(address);
+            new ControlInputs().validateInput(address);
         });
         city.addEventListener("blur", () => {
-            new controlInputs().validateInput(city);
+            new ControlInputs().validateInput(city);
         });
-        document.getElementById("order").addEventListener("click", (e)=>{new controlInputs().validateForm(e)});
+        document.getElementById("order").addEventListener("click", (e)=>{new ControlInputs().validateForm(e)});
 
     }
     //Application Ajout au panier
@@ -222,6 +222,7 @@ class Cart{
         }
         this.save();
     }
+    //Suppression d'un produit DOM et localstorage
     remove(){
         let articleRemoved = this.parentNode.parentNode.parentNode.parentNode;
         let idProduct = articleRemoved.dataset['id'];
@@ -310,7 +311,7 @@ class Template{
           </article>
         </a>`;
     }
-    //Afficheg d'un produit
+    //Affiche d'un produit
     oneProduct(){
         this.colors.forEach(p => {
             document.getElementById("colors").innerHTML += `<option value='${p}'>${p}</option>`;
@@ -354,7 +355,7 @@ class Template{
         </articles>
     `;  
     }
-    //Affichage des messages d'erreurs / d'alerte et succès
+    //Creation DOM des messages d'erreurs / d'alerte et succès
     domMessages(){
         return `
         <div id='containerMessagesSuccess' class='divHidden'>
@@ -423,6 +424,7 @@ class Template{
          new messageTypes({type:type,message:message});
     
     }
+    //Affichage du message d'erreur liè à l'API
     messageErrorAPI(message){
         document.querySelector("main").innerHTML=`
         <div class="limitedWidthBlock">
@@ -438,7 +440,7 @@ class Template{
 //Class de controle des elements
 //------------------------------
 class Controls{
-    //Controle de la quantité des produits du panier
+    //Controle de la quantité des produits du panier ( avec gestion DOM pour plusieurs produits )
     quantityCart(indexItem){
         let resultIndex=indexItem.target.attributes.name.nodeValue;
         let index = resultIndex.replace("itemQuantity_","");
@@ -491,7 +493,10 @@ class Controls{
         }
     }
 }
-class controlInputs {
+//---------------------------------------------------
+//Class controle du formulaire avant envoi au backend
+//---------------------------------------------------
+class ControlInputs {
     constructor() {
         this.form=document.querySelector("form");
     }
