@@ -11,8 +11,7 @@ class Init{
         this.shop = null;
     }
     launch(){
-        this.shop = new Application({id:`${urlProductId}`,view:"oneId"});
-        this.shop.get_one_product();
+        this.shop = new Application({id:`${urlProductId}`,view:"oneId"}).get_one_product();
     }
 }
 //Lancement de l'application

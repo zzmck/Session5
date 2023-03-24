@@ -244,7 +244,7 @@ class Cart{
         let colorProduct = articleRemoved.dataset['color'];
         const application = new Application();
         const template = new Template();
-        let oldCart = application.getPanierLocalStorage();
+        let oldCart = JSON.parse(localStorage.getItem('panier'));
         let newCart = [];
         for( let i = 0 ; i < oldCart.length ; i++){
             if( oldCart[i].id === idProduct && oldCart[i].color === colorProduct ){ } else {
@@ -604,16 +604,16 @@ class Controls{
             if (inputValue.length === 0) {
                 template.errorFormMsg(inputName, "red", MESSAGE_FORM_EMPTY);
                 return false;
-            } else if (inputName !== "city" && inputName !== "address" && inputName !== "email" && inputValue.match(/[0-9]/i)) {
-                template.errorFormMsg(inputName, "orange", MESSAGE_FORM_NONUMBER);
+            } else if (inputName !== "email" && inputName !== "city" && inputName !== "address" && (!inputValue.match(/^[a-zA-Z\s\-]+$/))){
+                template.errorFormMsg(inputName, "orange", "ne peux contenir des chiffres ou caractère spéciaux");
                 return false;
-            } else if (inputName !== "address" && inputName !== "email" && inputValue.match(/[ýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._\s\.\,\\\@\!\\[\]\&\(\)\|\_\/\%\^\*+\°\§\€\&\"\`\=\+\¤\¨:]/)) {
-                template.errorFormMsg(inputName, "orange", MESSAGE_FORM_CARACTERE);
+            } else if (inputName !== "email" && inputName !== "firstName" && inputName !== "lastName" && (!inputValue.match(/^[a-zA-Z0-9\s-]+$/))){
+                template.errorFormMsg(inputName, "orange", "ne peux contenir de caractère spéciaux");
                 return false;
             } else if (inputName === "email" && (!inputValue.match(/^(([^<>()[]\.,;:s@]+(.[^<>()[]\.,;:s@]+)*)|(.+))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/) || inputValue.match(" "))){
                 template.errorFormMsg(inputName, "orange", MESSAGE_FORM_EMAIL);
                 return false;
-            } else {
+            }  else {
                 template.errorFormMsg(inputName, "green", MESSAGE_FORM_GOODINPUT);
                 return true;
             }

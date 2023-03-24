@@ -8,8 +8,7 @@ class Init{
         this.shop = null;
     }
     launch(){
-        this.shop = new Application({view:"confirmation"});
-        this.shop.get_all_products();
+        this.shop = new Application({view:"confirmation"}).get_all_products();
     }
 }
 //Lancement de l'application
