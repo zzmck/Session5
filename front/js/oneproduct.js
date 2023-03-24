@@ -2,8 +2,7 @@
 import {Application} from './application.js';
 
 //Récupération de l'ID du produit demandé
-const url = new URL(window.location.href);
-const urlProductId = url.searchParams.get('id');
+const urlProductId = new URL(window.location.href).searchParams.get('id');
 //----------------------
 //Class d'initialisation
 //----------------------

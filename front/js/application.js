@@ -63,9 +63,9 @@ export class Application{
         })
     }
     //Application tous les produits
-    showAllProducts(input){
-        input.forEach(element => {
-            document.querySelector("#items").innerHTML += new Template(element).allProducts();
+    showAllProducts(products){
+        products.forEach(product => {
+            document.querySelector("#items").innerHTML += new Template(product).allProducts();
         });
     }
     //Application pour un produit
@@ -131,14 +131,18 @@ export class Application{
         const selectedColor = document.getElementById("colors").value;
         const selectedQuantity = document.getElementById("quantity").value;
         const urlProductId = WINDOW_URL.searchParams.get('id');
-      
+        
         if (!new Controls().color("colors")) {
           new Template().showMessages("error", MESSAGE_ERROR_SELECTCOLOR);
           return;
         }
-      
-        new Cart().add({ id: urlProductId, color: selectedColor, quantity: selectedQuantity });
+        
+        new Cart().add({ id: urlProductId, color: selectedColor, quantity: Number(selectedQuantity) });
         new Template().showMessages("success", MESSAGE_SUCCESS_ADDTOCART);
+        new Controls().oneProductQuantityColor();
+        new Template().oneProductQuantityNumber(1);
+
+        //new Application({ id: urlProductId,view:"oneId"}).get_one_product();
     }
     //Application Envoi du formulaire de commande
     sendForm() {
@@ -210,7 +214,7 @@ class Cart{
     add(product){
         let foundProduct = this.cartLs.find(p => p.id === product.id && p.color === product.color);
         if(foundProduct !== undefined){
-            foundProduct.quantity = product.quantity;
+                foundProduct.quantity += product.quantity;
         } else {
             let sameProduct = this.cartLs.find(p => p.id === product.id);
             if (sameProduct !== undefined) {
@@ -241,6 +245,18 @@ class Cart{
         new Application({view:"cart"}).get_all_products();
 
     }
+    getQuantity(productId){
+        let products = new Cart().cartLs.filter(function (element) {
+            return (
+              element.id === productId
+            );
+          });
+          if(products.length > 0 ) {
+            return products[0];
+          } else {
+            //return 0;
+          }
+    }
     //Changer la quantité d'un produit dans le LocalStorage
     changeQuantity(quantity,index){
         this.cartLs[index]['quantity']=quantity;
@@ -255,7 +271,7 @@ class Cart{
             number+=Number(product.quantity);
         }
         
-        document.querySelector("#totalQuantity").textContent=number;
+        document.querySelector("#totalQuantity").textContent=number.toLocaleString();
         return;
     }
     //calcul du prix total du panier
@@ -267,7 +283,7 @@ class Cart{
                 let priceOfProduct = result.find(d=>d._id===product.id);
                 total+=product.quantity * priceOfProduct.price
             }
-            document.querySelector("#totalPrice").textContent= total;
+            document.querySelector("#totalPrice").textContent= total.toLocaleString();
             return;
         })
         
@@ -319,14 +335,16 @@ class Template{
         document.querySelector(".item__img").innerHTML = `<img src="${this.imageUrl}" alt="${this.altTxt}">`;
         document.querySelector("title").textContent = this.name;
         document.querySelector("#title").textContent = this.name;
-        document.querySelector("#price").textContent = this.price;
+        document.querySelector("#price").textContent = this.price.toLocaleString();
         document.querySelector("#description").textContent = this.description;
         document.querySelector("article").innerHTML+=this.domMessages();
         document.querySelector("#quantity").setAttribute("min",APP_MINIMUMQUANTITY);
         document.querySelector("#quantity").setAttribute("max",APP_MAXIMUMQUANTITY);
         document.querySelector("#quantity").setAttribute("value",APP_MINIMUMQUANTITY);
         document.querySelector(".item__content__settings__quantity").firstElementChild.textContent=DOM_NUMBERACCEPTQUANTITY;
-        document.querySelector("#quantity").addEventListener('change',new Controls().quantityOneProduct);
+        document.querySelector("#colors").addEventListener('change',new Controls().oneProductQuantityColor);
+        document.querySelector("#quantity").addEventListener('change',new Controls().oneProductQuantityColor);
+        document.getElementById("quantity").setAttribute("disabled","");
         document.querySelector("#addToCart").addEventListener("click",new Application().addTocart);
     }
     //Affichage du panier
@@ -340,7 +358,7 @@ class Template{
                 <div class="cart__item__content__description">
                     <h2>${api.name}</h2>
                     <p>${ls.color}</p>
-                    <p>${api.price} €</p>
+                    <p>${api.price.toLocaleString()} €</p>
                 </div>
                 <div class="cart__item__content__settings">
                     <div class="cart__item__content__settings__quantity">
@@ -435,6 +453,25 @@ class Template{
         </div>
         `;
     }
+    oneProductQuantityMax(valueMax){
+        document.querySelector("#quantity").setAttribute("max",valueMax);
+    }
+    oneProductQuantityDisabled(state){
+        const quantityInput = document.getElementById("quantity");
+        if ( state ){ quantityInput.setAttribute("disabled",""); }
+        else { quantityInput.removeAttribute("disabled",""); }
+    }
+    oneProductQuantityNumber(number){
+        document.getElementById("quantity").value=number;
+    }
+    buttomAddtoCartDisabled(state){
+        const buttomAddtoCart = document.getElementById("addToCart");
+        if ( state ){ buttomAddtoCart.setAttribute("disabled",""); }
+        else { buttomAddtoCart.removeAttribute("disabled",""); }
+    }
+    messageQuantityPossible(message){
+        document.querySelector(".item__content__settings__quantity").firstElementChild.textContent=message;
+    }
 }
 //------------------------------
 //Class de controle des elements
@@ -462,17 +499,54 @@ class Controls{
         new Cart().changeQuantity(quantityDom,index);
         new Template().showMessages("success",MESSAGE_SUCCESS_NEWQUANTITY+ " "+quantityDom+".");
     }
-    //Controle de la quantité du produit seul
-    quantityOneProduct(indexItem){
-        let index = indexItem.target.id;
-        let quantityDom = document.getElementById(`${index}`).value;
-        if(quantityDom < APP_MINIMUMQUANTITY){ 
-            document.getElementById(`${index}`).value=APP_MINIMUMQUANTITY; 
-            new Template().showMessages("alert",MESSAGE_ALERT_MINIMUMQUANTITY);
+    //Controle Selection de la couleur et de la quantité sur OnePorduct
+    oneProductQuantityColor(){
+        let colorSelected=document.querySelector("#colors").value;
+        let quantityDom=document.querySelector("#quantity").value;
+        //SI couleur non selectionnée ou alerte et fin.
+        if (!new Controls().color("colors")) {
+            //On désactive les quantités
+            new Template().oneProductQuantityDisabled(true);
+            //On met la quantité à 1
+            new Template().oneProductQuantityNumber(1);
+            return;
         }
-        if(quantityDom > APP_MAXIMUMQUANTITY){ 
-            document.getElementById(`${index}`).value=APP_MAXIMUMQUANTITY;
-            new Template().showMessages("alert",MESSAGE_ALERT_MAXIMUMQUANTITY);
+        new Template().oneProductQuantityDisabled(false);
+        if(quantityDom < APP_MINIMUMQUANTITY){ 
+            new Template().oneProductQuantityNumber(1);
+        }
+        //Le produit existe-il avec cette couleur?
+        let isExist = new Controls().productIsInCart(colorSelected);
+        if(isExist){
+            //On récupére la quantité du Ls
+            const quantityInLs = isExist.quantity;
+            //Combien de produit encore disponible ?
+            const restQuantity = Number(APP_MAXIMUMQUANTITY) - Number(quantityInLs);
+            //SI = 0 (plus rien à vendre)
+            if(restQuantity===0){
+                new Template().oneProductQuantityDisabled(true);
+                new Template().oneProductQuantityNumber(0);
+                new Template().oneProductQuantityMax(0);
+                new Template().messageQuantityPossible(`Limite des ${APP_MAXIMUMQUANTITY} produits atteind.`);
+                new Template().buttomAddtoCartDisabled(true);
+                return;
+            }
+            if(quantityDom > restQuantity){
+                new Template().oneProductQuantityNumber(restQuantity);
+            }
+            new Template().oneProductQuantityDisabled(false);
+            new Template().oneProductQuantityMax(restQuantity);
+            new Template().messageQuantityPossible(`Nombre d'article(s) (${APP_MINIMUMQUANTITY}-${restQuantity})`);
+            new Template().buttomAddtoCartDisabled(false);
+            return
+        } else {
+            if(quantityDom > APP_MAXIMUMQUANTITY){
+                new Template().oneProductQuantityNumber(APP_MAXIMUMQUANTITY);
+            }
+        new Template().oneProductQuantityDisabled(false);
+        new Template().oneProductQuantityMax(APP_MAXIMUMQUANTITY);
+        new Template().messageQuantityPossible(`Nombre d'article(s) (${APP_MINIMUMQUANTITY}-${APP_MAXIMUMQUANTITY})`);
+        new Template().buttomAddtoCartDisabled(false);
         }
     }
     //Controle de la séléction d'une couleur
@@ -482,11 +556,12 @@ class Controls{
         );
         
     }
-    //controle de la présence d'un produit dans le panier
-    productIsInCart(productId){
+    //controle de la présence d'un produit dans le panier (id via URL et couleur en paramètre)
+    productIsInCart(productColor){
+        const productId = new URL(window.location.href).searchParams.get('id');
         let products = new Cart().cartLs.filter(function (element) {
           return (
-            element.id === productId
+            (element.id === productId)&&(element.color === productColor)
           );
         });
         if(products.length > 0 ) {
