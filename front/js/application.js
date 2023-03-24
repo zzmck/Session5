@@ -139,7 +139,7 @@ export class Application{
       
         new Cart().add({ id: urlProductId, color: selectedColor, quantity: selectedQuantity });
         new Template().showMessages("success", MESSAGE_SUCCESS_ADDTOCART);
-      }
+    }
     //Application Envoi du formulaire de commande
     sendForm() {
         let productsIdOrder = [];
@@ -176,7 +176,7 @@ export class Application{
           .catch(function (error) {
             new Template().showMessages("error", MESSAGE_ERROR_API + " : " + error);
           });
-      }
+    }
     //Application confirmation de commande
     orderConfirmation(){
         const urlId = WINDOW_URL.searchParams.get('orderId');
