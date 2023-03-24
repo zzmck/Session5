@@ -109,21 +109,21 @@ export class Application{
     let city = document.getElementById("city");
 
         firstName.addEventListener("blur", () => {
-            new ControlInputs().validateInput(firstName);
+            new Controls().validateInput(firstName);
         });
         lastName.addEventListener("blur", () => {
-            new ControlInputs().validateInput(lastName);
+            new Controls().validateInput(lastName);
         });
         email.addEventListener("blur", () => {
-            new ControlInputs().validateInput(email);
+            new Controls().validateInput(email);
         });
         address.addEventListener("blur", () => {
-            new ControlInputs().validateInput(address);
+            new Controls().validateInput(address);
         });
         city.addEventListener("blur", () => {
-            new ControlInputs().validateInput(city);
+            new Controls().validateInput(city);
         });
-        document.getElementById("order").addEventListener("click", (e)=>{new ControlInputs().validateForm(e)});
+        document.getElementById("order").addEventListener("click", (e)=>{new Controls().validateForm(e)});
 
     }
     //Application Ajout au panier
@@ -440,6 +440,9 @@ class Template{
 //Class de controle des elements
 //------------------------------
 class Controls{
+    constructor() {
+        this.form=document.querySelector("form");
+    }
     //Controle de la quantité des produits du panier ( avec gestion DOM pour plusieurs produits )
     quantityCart(indexItem){
         let resultIndex=indexItem.target.attributes.name.nodeValue;
@@ -492,57 +495,49 @@ class Controls{
           return null;
         }
     }
-}
-//---------------------------------------------------
-//Class controle du formulaire avant envoi au backend
-//---------------------------------------------------
-class ControlInputs {
-    constructor() {
-        this.form=document.querySelector("form");
-    }
     //Formulaire : controle individuel des champs
     validateInput(input) {
-        const inputValue = input.value.trim();
-        const inputName = input.getAttribute("name");
-
-        if (inputValue.length === 0) {
-            this.errorFormMsg(inputName, "red", MESSAGE_FORM_EMPTY);
-            return false;
-        } else if (inputName !== "address" && inputName !== "email" && inputValue.match(/[0-9]/i)) {
-            this.errorFormMsg(inputName, "orange", MESSAGE_FORM_NONUMBER);
-            return false;
-        } else if (inputName !== "address" && inputName !== "email" && inputValue.match(/[ýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._\s\.\,\\\@\!\\[\]\&\(\)\|\_\/\%\^\*+\°\§\€\&\"\`\=\+\¤\¨:]/)) {
-            this.errorFormMsg(inputName, "orange", MESSAGE_FORM_CARACTERE);
-            return false;
-        } else if (inputName === "email" && (!inputValue.match(/^(([^<>()[]\.,;:s@]+(.[^<>()[]\.,;:s@]+)*)|(.+))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/) || inputValue.match(" "))){
-            this.errorFormMsg(inputName, "orange", MESSAGE_FORM_EMAIL);
-            return false;
-        } else {
-            this.errorFormMsg(inputName, "green", MESSAGE_FORM_GOODINPUT);
-            return true;
-        }
+            const inputValue = input.value.trim();
+            const inputName = input.getAttribute("name");
+    
+            if (inputValue.length === 0) {
+                this.errorFormMsg(inputName, "red", MESSAGE_FORM_EMPTY);
+                return false;
+            } else if (inputName !== "address" && inputName !== "email" && inputValue.match(/[0-9]/i)) {
+                this.errorFormMsg(inputName, "orange", MESSAGE_FORM_NONUMBER);
+                return false;
+            } else if (inputName !== "address" && inputName !== "email" && inputValue.match(/[ýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._\s\.\,\\\@\!\\[\]\&\(\)\|\_\/\%\^\*+\°\§\€\&\"\`\=\+\¤\¨:]/)) {
+                this.errorFormMsg(inputName, "orange", MESSAGE_FORM_CARACTERE);
+                return false;
+            } else if (inputName === "email" && (!inputValue.match(/^(([^<>()[]\.,;:s@]+(.[^<>()[]\.,;:s@]+)*)|(.+))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/) || inputValue.match(" "))){
+                this.errorFormMsg(inputName, "orange", MESSAGE_FORM_EMAIL);
+                return false;
+            } else {
+                this.errorFormMsg(inputName, "green", MESSAGE_FORM_GOODINPUT);
+                return true;
+            }
     }
     //Formulaire : validation du formulaire avant envoi de commande
     validateForm(e) {
-        e.preventDefault();
-        const inputs = document.querySelectorAll("input[type=text],input[type=email]");
-        let formIsValid = true;
-
-        inputs.forEach(input => {
-            const isValid = this.validateInput(input);
-            if (!isValid) {
-                formIsValid = false;
+            e.preventDefault();
+            const inputs = document.querySelectorAll("input[type=text],input[type=email]");
+            let formIsValid = true;
+    
+            inputs.forEach(input => {
+                const isValid = this.validateInput(input);
+                if (!isValid) {
+                    formIsValid = false;
+                }
+            });
+    
+            if (formIsValid) {
+                new Application().sendForm();
             }
-        });
-
-        if (formIsValid) {
-            new Application().sendForm();
-        }
     }
-    //Mise en forme des messages sous les champs
+    //Formulaire : Mise en forme des messages sous les champs
     errorFormMsg(inputName,errorColor,message){
-        document.getElementById(inputName + "ErrorMsg").textContent = message;    
-        document.getElementById(inputName).style.border=`3px solid ${errorColor}`;
-        document.getElementById(inputName + "ErrorMsg").style.color = errorColor;
+            document.getElementById(inputName + "ErrorMsg").textContent = message;    
+            document.getElementById(inputName).style.border=`3px solid ${errorColor}`;
+            document.getElementById(inputName + "ErrorMsg").style.color = errorColor;
     }
 }
