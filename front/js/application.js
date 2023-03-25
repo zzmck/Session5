@@ -560,7 +560,7 @@ class Controls{
             if(restQuantity===0){
                 template.oneProductQuantityColor_modification(true,restQuantity,true);
                 template.oneProductQuantityNumber(0);
-                template.messageQuantityPossible(`Limite des ${APP_MAXIMUMQUANTITY} produits atteind.`);
+                template.messageQuantityPossible(MESSAGE_ALERT_MAX_PRODUCTS);
                 return;
             }
             if(quantityDom > restQuantity){
@@ -605,10 +605,10 @@ class Controls{
                 template.errorFormMsg(inputName, "red", MESSAGE_FORM_EMPTY);
                 return false;
             } else if (inputName !== "email" && inputName !== "city" && inputName !== "address" && (!inputValue.match(/^[a-zA-Z\s\-]+$/))){
-                template.errorFormMsg(inputName, "orange", "ne peux contenir des chiffres ou caractère spéciaux");
+                template.errorFormMsg(inputName, "orange", MESSAGE_FORM_CARACTERE_NUMBER);
                 return false;
             } else if (inputName !== "email" && inputName !== "firstName" && inputName !== "lastName" && (!inputValue.match(/^[a-zA-Z0-9\s-]+$/))){
-                template.errorFormMsg(inputName, "orange", "ne peux contenir de caractère spéciaux");
+                template.errorFormMsg(inputName, "orange", MESSAGE_FORM_CARACTERE);
                 return false;
             } else if (inputName === "email" && (!inputValue.match(/^(([^<>()[]\.,;:s@]+(.[^<>()[]\.,;:s@]+)*)|(.+))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/) || inputValue.match(" "))){
                 template.errorFormMsg(inputName, "orange", MESSAGE_FORM_EMAIL);
