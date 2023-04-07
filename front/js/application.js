@@ -16,14 +16,14 @@ export class Application{
     }
     //Connexion API Backend All products
     async connectAPIAllProducts(){
-        const products = await fetch(`${API_PROTOCOL}://${API_URL}:${API_PORT}/${APP_BACKEND_URL_GET_PRODUCT}`);
+        const products = await fetch(`${API_PROTOCOL}://${API_URL}${API_PORT}/${APP_BACKEND_URL_GET_PRODUCT}`);
         if (products.ok) {
             return products.json();
         }
     }
     //Connexion API Backend One product
     async connectAPIOneProduct(){
-        const products = await fetch(`${API_PROTOCOL}://${API_URL}:${API_PORT}/${APP_BACKEND_URL_GET_PRODUCT}/${this.id}`);
+        const products = await fetch(`${API_PROTOCOL}://${API_URL}${API_PORT}/${APP_BACKEND_URL_GET_PRODUCT}/${this.id}`);
         if (products.ok) {
              return products.json();
         }
@@ -176,7 +176,7 @@ export class Application{
           contact: contactForBack,
           products: productsIdOrder
         };
-        fetch(`${API_PROTOCOL}://${API_URL}:${API_PORT}/${APP_BACKEND_URL_SEND_ORDER}`, {
+        fetch(`${API_PROTOCOL}://${API_URL}${API_PORT}/${APP_BACKEND_URL_SEND_ORDER}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -257,7 +257,7 @@ class Cart{
         }
         application.removePanierLocalStorage();
         application.setitemsPanierLocalStorage(newCart);
-        template.showMessages("success",MESSAGE_SUCCESS_DELETEFORMCART);
+        template.showMessages("success",MESSAGE_SUCCESS_DELETEFROMCART);
         template.blankCartItems();
         new Application({view:"cart"}).get_all_products();
 
@@ -461,7 +461,7 @@ class Template{
         </div>
         `;
     }
-    //Désactive ou acive l'input quantité dans One product
+    //Désactive ou active l'input quantité dans One product
     oneProductQuantityDisabled(state){
         const quantityInput = document.getElementById("quantity");
         if ( state ){ quantityInput.setAttribute("disabled",""); }
@@ -475,12 +475,6 @@ class Template{
     oneProductQuantityNumber(number){
         document.getElementById("quantity").value=number;
     }
-    //Désactive ou active le bouton d'envoi de formulaire dans one product
-    buttomAddtoCartDisabled(state){
-        const buttomAddtoCart = document.getElementById("addToCart");
-        if ( state ){ buttomAddtoCart.setAttribute("disabled",""); }
-        else { buttomAddtoCart.removeAttribute("disabled",""); }
-    }
     //Affichage du message de quantité possible dans oneproduct
     messageQuantityPossible(message){
         document.querySelector(".item__content__settings__quantity").firstElementChild.textContent=message;
@@ -490,7 +484,6 @@ class Template{
         this.oneProductQuantityDisabled(disabledQuantity);
         this.oneProductQuantityAttibuteMax(maximumQuantity);
         this.messageQuantityPossible(`Nombre d'article(s) (${APP_MINIMUMQUANTITY}-${maximumQuantity})`);
-        this.buttomAddtoCartDisabled(disabledButtom);
     }
     //Affiche le montant total du panier
     showTotalCartPrice(total){

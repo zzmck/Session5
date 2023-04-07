@@ -2,13 +2,17 @@ const WINDOW_URL = new URL(window.location.href);
 
 const API_PROTOCOL = "http";
 const API_URL = "127.0.0.1";
-const API_PORT = "3000";
-
+const API_PORT = ":3000";
+//const API_PROTOCOL = "https";
+//const API_URL = "barriere-backendkanap.mdbgo.io";
+//const API_PORT = "";
 const APP_MINIMUMQUANTITY=1;
 const APP_MAXIMUMQUANTITY=100;
 const APP_BACKEND_URL_GET_PRODUCT="api/products";
 const APP_BACKEND_URL_SEND_ORDER="api/products/order";
-const APP_FRONTEND_URL_ORDER="html/confirmation.html?orderId";
+
+const APP_FRONTEND_URL_ORDER="front/html/confirmation.html?orderId"
+//const APP_FRONTEND_URL_ORDER="html/confirmation.html?orderId";
 
 const DOM_NUMBERACCEPTQUANTITY=`Nombre d'article(s) (${APP_MINIMUMQUANTITY}-${APP_MAXIMUMQUANTITY}) : `
 
